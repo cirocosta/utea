@@ -18,11 +18,12 @@ var webpackConfig = {
     this.module.noParse.push(new RegExp('^' + name + '$'));
   },
   entry: {
-    mango: __dirname + '/src/index.js'
+    mango: __dirname + '/src/index.js',
+    example: __dirname + '/src/example.js'
   },
   output: {
     path: __dirname + '/lib',
-    filename: "mango.js"
+    filename: "[name].js"
   },
   externals: { },
   resolve: {
@@ -52,20 +53,21 @@ var webpackConfig = {
     ],
     noParse: [ ]
   },
+  devtool: "eval-source-map",
   envInfo: envGlobals,
 };
 
 webpackConfig.addVendor('gl-matrix', 'node_modules/gl-matrix/dist/gl-matrix-min.js');
 
 if (envGlobals.__DEV__) {
-  var sourceMapPlugin = new webpack.EvalSourceMapDevToolPlugin("//# sourceMappingURL=[url]", "[resource-path]?[hash]");
+  // var sourceMapPlugin = new webpack.EvalSourceMapDevToolPlugin("//# sourceMappingURL=[url]", "[resource-path]?[hash]");
 
   webpackConfig.devServer = {
     contentBase: "./lib"
   };
 
   webpackConfig.debug = true;
-  webpackConfig.plugins.push(sourceMapPlugin);
+  // webpackConfig.plugins.push(sourceMapPlugin);
 }else{
   var productionDefinePlugin = new webpack.DefinePlugin({
     // Set NODE_ENV as production for react production optimizations
