@@ -1,5 +1,5 @@
 export default class Shader {
-  constructor (gl, vshader_source, fshader_source) {
+  constructor (gl, vshader_source, fshader_source, locations) {
     this._gl = gl;
     this._program;
     this._locations = {};
@@ -9,6 +9,8 @@ export default class Shader {
     this._program = this._createProgram(
       this._compile(vshader, this._gl.VERTEX_SHADER),
       this._compile(fshader, this._gl.FRAGMENT_SHADER));
+
+    this._locations = this._getLocations(locations);
   }
 
   bind () {
@@ -16,18 +18,17 @@ export default class Shader {
     this._gl = this._program;
   }
 
-  unbind () {
-  }
+  unbind () { }
 
   // a_Position, a_Normal, u_ModelMatrix;
-  _getLocations (gl, names) {
+  _getLocations (names) {
     return names.reduce((mem, name) => {
       let loc;
 
       if (name.startsWith('a_'))
-        loc = this._this._this._gl.getAttribLocation(this._gl.program, name);
+        loc = this._gl.getAttribLocation(this._program, name);
       else if (name.startsWith('u_'))
-        loc = this._gl.getUniformLocation(this._gl.program, name);
+        loc = this._gl.getUniformLocation(this._program, name);
       else // enforcing name consistency
         throw new Error('Attrib/Unif/Var must start with u_, a_ or v_');
 

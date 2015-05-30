@@ -15,10 +15,19 @@ export default class PaintBoard {
     this._gl.clear(this._gl.COLOR_BUFFER_BIT);
   }
 
+  genBuffer(vertices) {
+    let buffer = new Buffer(this._gl);
+    buffer.init(vertices);
+
+    return buffer;
+  }
+
+  genShader(basicVert, basicFrag) {
+    return new Shader(this._gl, basicVert, basicFrac);
+  }
+
   _resize() {
     let {clientWidth, clientHeight} = this._canvas;
-
-    console.log(clientWidth, clientHeight);
 
     if (this._canvas.width !== clientWidth ||
         this._canvas.height !== clientHeight) {

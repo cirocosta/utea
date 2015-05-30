@@ -49,15 +49,21 @@ var webpackConfig = {
         test: /\.js$/,
         loader: 'babel?stage=0',
         exclude: /(node_modules|bower_components)/
+      },
+      {
+        test: /\.(frag|vert)$/,
+        loader: 'shader-loader',
       }
     ],
     noParse: [ ]
   },
+  glsl: {},
   devtool: "eval-source-map",
   envInfo: envGlobals,
 };
 
-webpackConfig.addVendor('gl-matrix', 'node_modules/gl-matrix/dist/gl-matrix-min.js');
+webpackConfig.addVendor('gl-matrix',
+                        'node_modules/gl-matrix/dist/gl-matrix-min.js');
 
 if (envGlobals.__DEV__) {
   // var sourceMapPlugin = new webpack.EvalSourceMapDevToolPlugin("//# sourceMappingURL=[url]", "[resource-path]?[hash]");
