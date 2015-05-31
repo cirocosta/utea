@@ -1,26 +1,26 @@
 export default class Shader {
-  constructor (gl, vshader_source, fshader_source, locations) {
+  constructor (gl) {
     this._gl = gl;
     this._program;
     this._locations = {};
   }
 
-  init () {
-    this._program = this._createProgram(
+  init (vshader, fshader, names) {
+    this._createProgram(
       this._compile(vshader, this._gl.VERTEX_SHADER),
-      this._compile(fshader, this._gl.FRAGMENT_SHADER));
+      this._compile(fshader, this._gl.FRAGMENT_SHADER)
+    );
 
-    this._locations = this._getLocations(locations);
+    this._locations = this._getLocations(names);
   }
 
-  bind () {
+  enable () {
     this._gl.useProgram(this._program);
-    this._gl = this._program;
+    this._gl.program = this._program;
   }
 
-  unbind () { }
+  disable () { }
 
-  // a_Position, a_Normal, u_ModelMatrix;
   _getLocations (names) {
     return names.reduce((mem, name) => {
       let loc;
@@ -59,19 +59,17 @@ export default class Shader {
   }
 
   _createProgram (vshader, fshader) {
-    let program = this._gl.createProgram();
+    this._program = this._gl.createProgram();
 
-    if (!program)
+    if (!this._program)
       throw new Error('_createProgram: coult not create program.');
 
-    this._gl.attachShader(program, vshader);
-    this._gl.attachShader(program, fshader);
-    this._gl.linkProgram(program);
+    this._gl.attachShader(this._program, vshader);
+    this._gl.attachShader(this._program, fshader);
+    this._gl.linkProgram(this._program);
 
-    if (!this._gl.getProgramParameter(program, this._gl.LINK_STATUS))
+    if (!this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS))
       throw new Error('Shader program failed to link: ' +
-                      this._gl.getProgramInfoLog(program));
-
-    return program;
+                      this._gl.getProgramInfoLog(this._program));
   }
 };

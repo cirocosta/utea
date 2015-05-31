@@ -1,4 +1,3 @@
-/*jslint node: true */
 "use strict";
 
 var path = require('path');
@@ -6,7 +5,8 @@ var webpack = require('webpack');
 
 // Env configs
 var envGlobals = {
-  __DEV__: process.env.NODE_ENV != "production" && process.env.NODE_ENV != "staging",
+  __DEV__: process.env.NODE_ENV != "production",
+  __PROD__: process.env.NODE_ENV === "production"
 };
 
 var envGlobalsPlugin = new webpack.DefinePlugin(envGlobals);
@@ -17,21 +17,26 @@ var webpackConfig = {
     this.resolve.alias[name] = path;
     this.module.noParse.push(new RegExp('^' + name + '$'));
   },
+
   entry: {
     mango: __dirname + '/src/index.js',
-    example: __dirname + '/src/example.js'
+    example: __dirname + '/lib/example.js'
   },
+
   output: {
     path: __dirname + '/lib',
     filename: "[name].js"
   },
+
   externals: { },
+
   resolve: {
     extensions: ['', '.js'],
     root: __dirname,
     alias: {
     }
   },
+
   plugins: [
     envGlobalsPlugin,
     function() {
@@ -43,6 +48,7 @@ var webpackConfig = {
       });
     },
   ],
+
   module: {
     loaders: [
       {
@@ -57,6 +63,7 @@ var webpackConfig = {
     ],
     noParse: [ ]
   },
+
   glsl: {},
   devtool: "eval-source-map",
   envInfo: envGlobals,
@@ -66,17 +73,13 @@ webpackConfig.addVendor('gl-matrix',
                         'node_modules/gl-matrix/dist/gl-matrix-min.js');
 
 if (envGlobals.__DEV__) {
-  // var sourceMapPlugin = new webpack.EvalSourceMapDevToolPlugin("//# sourceMappingURL=[url]", "[resource-path]?[hash]");
-
   webpackConfig.devServer = {
     contentBase: "./lib"
   };
 
   webpackConfig.debug = true;
-  // webpackConfig.plugins.push(sourceMapPlugin);
-}else{
+} else {
   var productionDefinePlugin = new webpack.DefinePlugin({
-    // Set NODE_ENV as production for react production optimizations
     "process.env": { NODE_ENV: JSON.stringify("production") }
   });
 
