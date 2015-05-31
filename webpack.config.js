@@ -1,6 +1,5 @@
 "use strict";
 
-var path = require('path');
 var webpack = require('webpack');
 
 // Env configs
@@ -19,8 +18,8 @@ var webpackConfig = {
   },
 
   entry: {
-    mango: __dirname + '/src/index.js',
-    example: __dirname + '/lib/example.js'
+    'mango': './src/index.js',
+    '01-square': './example/01-square/01-square.js',
   },
 
   output: {
@@ -34,7 +33,8 @@ var webpackConfig = {
     extensions: ['', '.js'],
     root: __dirname,
     alias: {
-    }
+      mango: __dirname + "/src"
+    },
   },
 
   plugins: [
@@ -74,7 +74,7 @@ webpackConfig.addVendor('gl-matrix',
 
 if (envGlobals.__DEV__) {
   webpackConfig.devServer = {
-    contentBase: "./lib"
+    contentBase: "./"
   };
 
   webpackConfig.debug = true;
