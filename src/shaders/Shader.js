@@ -19,8 +19,6 @@ export default class Shader {
     this._gl.program = this._program;
   }
 
-  disable () { }
-
   _getLocations (names) {
     return names.reduce((mem, name) => {
       let loc;

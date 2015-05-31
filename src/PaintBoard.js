@@ -1,13 +1,11 @@
-export default class PaintBoard {
+if (__DEV__)
+  var {createDebugContext} = require("./utils/debug.js");
 
+export default class PaintBoard {
   constructor (canvas) {
     this._canvas = canvas;
     this._gl;
 
-    this.init();
-  }
-
-  init () {
     this._create3DContext();
     this._gl.clearColor(0.0, 0.0, 0.0, 1.0);
   }
@@ -47,6 +45,9 @@ export default class PaintBoard {
 
     if (!ctx)
       throw new Error('GL instance coudl\'t be set.');
+
+    if (__DEV__)
+      ctx = createDebugContext(ctx);
 
     this._gl = ctx;
   }

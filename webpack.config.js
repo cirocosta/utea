@@ -71,6 +71,8 @@ var webpackConfig = {
 
 webpackConfig.addVendor('gl-matrix',
                         'node_modules/gl-matrix/dist/gl-matrix-min.js');
+webpackConfig.addVendor('webgl-debug',
+                         __dirname + '/vendor/webgl-debug.js');
 
 if (envGlobals.__DEV__) {
   webpackConfig.devServer = {
