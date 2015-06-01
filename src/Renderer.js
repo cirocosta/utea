@@ -1,5 +1,6 @@
 export default class Renderer {
-  constructor () {
+  constructor (camera) {
+    this._camera = camera;
     this._renderQueue = [];
   }
 
@@ -9,7 +10,7 @@ export default class Renderer {
 
   flush () {
     for (let renderable of this._renderQueue) {
-      renderable.draw();
+      renderable.draw(this._camera);
     }
   }
 };

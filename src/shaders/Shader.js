@@ -19,6 +19,14 @@ export default class Shader {
     this._gl.program = this._program;
   }
 
+  setUniform3fv (name, data) {
+    this._gl.uniform3f(this._locations[name], false, data);
+  }
+
+  setUniform4fv (name, data) {
+    this._gl.uniformMatrix4fv(this._locations[name], false, data);
+  }
+
   _getLocations (names) {
     return names.reduce((mem, name) => {
       let loc;

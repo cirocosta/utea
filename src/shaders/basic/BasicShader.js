@@ -5,7 +5,10 @@ import Shader from "../Shader.js";
 export default class BasicShader extends Shader{
   constructor (gl) {
     super(gl);
-    this.init(basicVertex, basicFragment, ['a_Position']);
+    this.init(basicVertex, basicFragment, [
+      'a_Position',
+      'u_ViewMatrix', 'u_ModelMatrix', 'u_ProjectionMatrix',
+    ]);
   }
 
   initLocations(buffer) {
