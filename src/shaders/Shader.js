@@ -49,9 +49,12 @@ export default class Shader {
     this._gl.shaderSource(shader, source);
     this._gl.compileShader(shader);
 
-    if (!this._gl.getShaderParameter(shader, this._gl.COMPILE_STATUS))
+    if (!this._gl.getShaderParameter(shader, this._gl.COMPILE_STATUS)) {
+      console.error("Error in the following shader:");
+      console.error(source);
       throw new Error('Shader failed to compile: ' +
                        this._gl.getShaderInfoLog(shader));
+    }
 
     return shader;
   }
