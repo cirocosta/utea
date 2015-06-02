@@ -7,6 +7,9 @@ export default class PaintBoard {
     this._canvas = canvas;
     this._camera;
 
+    this._buttons = {};
+    this._keys = {};
+
     this._create3DContext();
     this._gl.clearColor(0.0, 0.0, 0.0, 1.0);
   }
@@ -28,8 +31,42 @@ export default class PaintBoard {
       this._canvas.width = clientWidth;
       this._canvas.height = clientHeight;
 
-      this._camera.updateAR(clientWidth / clientHeight);
+      this._camera.updateAR(clientHeight/clientWidth);
       this._gl.viewport(0, 0, this._canvas.width, this._canvas.height);
+    }
+  }
+
+  isKeyActive (code) {
+    return this._keys[code];
+  }
+
+  isButtonActive (button) {
+    return this._buttons[code];
+  }
+
+  bindKeysAndMouse (interceptRightClick=false) {
+    window.addEventListener('keydown', (evt) => {
+      this._keys[evt.keyCode] = true;
+    }, false);
+
+    window.addEventListener('keyup', (evt) => {
+      this._keys[evt.keyCode] = false;
+    });
+
+    window.addEventListener('mousedown', (evt) => {
+      this._buttons[evt.button] = false;
+    });
+
+    window.addEventListener('mouseup', (evt) => {
+      this._buttons[evt.button] = false;
+    });
+
+    if (interceptRightClick) {
+      window.addEventListener('contextmenu', (evt) => {
+        evt.preventDefault();
+
+        return false;
+      });
     }
   }
 

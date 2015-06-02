@@ -4,18 +4,22 @@ const deg_to_rad = (deg) => deg*Math.PI/180.0;
 
 export default class Camera {
   constructor (fov=70, near=0.1, far=10) {
+    // perspective camera parametrization
     this._fov = fov;
     this._near = near;
     this._far = far;
     this._ar = 1.0;
 
+    // default camera positioning
     this._at = [0.0, 0.0, 0.0];
     this._position = [0.0, 0.0, -1.0];
     this._up = [0.0, 1.0, 0.0];
 
+    // internal matrices
     this._viewMatrix = mat4.create();
     this._projectionMatrix = mat4.create();
 
+    // private methods
     this._updateProjection();
     this._updateView();
   }

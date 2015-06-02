@@ -22,10 +22,12 @@ export default class Renderable {
 
   draw (camera) {
     this._shader.enable();
-    this._shader.setUniform4fv('u_ModelMatrix', this._modelMatrix);
-    this._shader.setUniform4fv('u_ViewMatrix', camera._viewMatrix);
-    this._shader.setUniform4fv('u_ProjectionMatrix', camera._projectionMatrix);
-
+    this._shader.setUniform4fv('u_ModelMatrix',
+                                this._modelMatrix);
+    this._shader.setUniform4fv('u_ViewMatrix',
+                                camera._viewMatrix);
+    this._shader.setUniform4fv('u_ProjectionMatrix',
+                                camera._projectionMatrix);
     this._buffers.vbo.bind();
     this._shader.prepareLocations(this._buffers.vbo);
     this._buffers.ibo.bind();

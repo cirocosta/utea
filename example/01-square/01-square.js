@@ -6,6 +6,8 @@ import Renderer from "mango/Renderer/";
 import Camera from "mango/Camera";
 
 let pb = new PaintBoard(document.querySelector("canvas"));
+pb.bindKeysAndMouse(true);
+
 let material = new BasicMaterial(pb._gl);
 let renderable = new Renderable(pb._gl, material,
                     new Rectangle(pb._gl, 1.0, 1.0));
