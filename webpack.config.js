@@ -20,6 +20,7 @@ var webpackConfig = {
   entry: {
     'mango': './src/index.js',
     '01-square': './example/01-square/01-square.js',
+    '02-cubes': './example/02-cubes/02-cubes.js',
   },
 
   output: {

@@ -4,9 +4,10 @@ import IndexBuffer from "../buffers/IndexBuffer.js";
 export default class Cube {
   constructor (gl, w=1, h=1, d=1) {
     this._gl = gl;
+    this.buffers = {vbo: null, ibo: null};
 
     // public stuff
-    this.vbo = new ArrayBuffer(gl, new Float32Array([
+    this.buffers.vbo = new ArrayBuffer(gl, new Float32Array([
        0.5,  0.5,  0.5,   // v0 White
       -0.5,  0.5,  0.5,   // v1 Magenta
       -0.5, -0.5,  0.5,   // v2 Red
@@ -17,7 +18,7 @@ export default class Cube {
       -0.5, -0.5, -0.5,   // v7 Black
     ]));
 
-    this.ibo = new IndexBuffer(gl, new Uint16Array([
+    this.buffers.ibo = new IndexBuffer(gl, new Uint16Array([
       0, 1, 2,   0, 2, 3,    // front
       0, 3, 4,   0, 4, 5,    // right
       0, 5, 6,   0, 6, 1,    // up
