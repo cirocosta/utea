@@ -8,6 +8,10 @@ export default class Renderable {
     this._buffers = geom.buffers;
     this._shader = material.shader;
     this._modelMatrix = mat4.create();
+
+    material.prepare(geom);
+
+    this._material = material;
   }
 
   setPosition (pos) {

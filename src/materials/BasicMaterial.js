@@ -6,7 +6,11 @@ import ArrayBuffer from "../buffers/ArrayBuffer.js";
  * going to be used (uniformly)
  */
 export default class BasicMaterial {
-  constructor (gl) {
-    this.shader = new BasicShader(gl);
+  constructor (gl, color) {
+    this.shader = new BasicShader(gl, color);
+  }
+
+  prepare (geom) {
+    this.shader.prepare(geom);
   }
 };
