@@ -28,25 +28,17 @@ camera._updateView();
     window.requestAnimationFrame(loop);
     pb.update();
 
-    if (pb.isKeyActive(65)) {
-      cube._position[0] -= 0.05;
-      cube._updateModelMatrix();
-    }
+    if (pb.isKeyActive(65))
+      cube.incrementPosition(-0.05);
 
-    if (pb.isKeyActive(68)) {
-      cube._position[0] += 0.05;
-      cube._updateModelMatrix();
-    }
+    if (pb.isKeyActive(68))
+      cube.incrementPosition(0.05);
 
-    if (pb.isKeyActive(87)) {
-      cube._position[1] += 0.05;
-      cube._updateModelMatrix();
-    }
+    if (pb.isKeyActive(87))
+      cube.incrementPosition(0.0, 0.05);
 
-    if (pb.isKeyActive(83)) {
-      cube._position[1] -= 0.05;
-      cube._updateModelMatrix();
-    }
+    if (pb.isKeyActive(83))
+      cube.incrementPosition(0.0, -0.05);
 
     renderer.flush();
 })();

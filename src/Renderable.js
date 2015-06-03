@@ -1,41 +1,20 @@
-import {mat4, vec3} from "gl-matrix";
+import Body from "./Body.js";
 
-export default class Renderable {
+export default class Renderable extends Body {
   constructor (gl, material, geom, meshgrid=false) {
-    this._gl = gl;
+    super();
 
-    this._position = vec3.create();
+    this._gl = gl;
     this._buffers = geom.buffers;
     this._shader = material.shader;
-    this._modelMatrix = mat4.create();
-    this._normalMatrix = mat4.create();
-
-    material.prepare(geom);
-    console.log(geom);
-
     this._material = material;
     this._drawMode = meshgrid ? gl.LINES : gl.TRIANGLES;
-  }
 
-  setPosition (pos) {
-    this._position = pos;
-    this._updateModelMatrix();
-  }
-
-  _updateModelMatrix (updateNormals=true) {
-    mat4.identity(this._modelMatrix);
-    mat4.translate(this._modelMatrix, this._modelMatrix, this._position);
-
-    if (updateNormals)
-      this._updateNormalMatrix();
-  }
-
-  _updateNormalMatrix () {
-    mat4.invert(this._normalMatrix, this._modelMatrix);
-    mat4.transpose(this._normalMatrix, this._normalMatrix);
+    this._material.prepare(geom);
   }
 
   draw (camera) {
+    this.prepare();
     this._shader.enable();
     this._shader.prepareUniforms(this, camera);
     this._shader.prepareLocations();
