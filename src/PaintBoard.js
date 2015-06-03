@@ -1,20 +1,27 @@
+if (__DEV__)
+  var {createDebugContext} = require("./utils/debug.js");
+
 export default class PaintBoard {
-
   constructor (canvas) {
-    this._canvas = canvas;
     this._gl;
+    this._canvas = canvas;
+    this._camera;
 
-    this.init();
-  }
+    this._buttons = {};
+    this._keys = {};
 
-  init () {
     this._create3DContext();
+    this._gl.enable(this._gl.DEPTH_TEST);
     this._gl.clearColor(0.0, 0.0, 0.0, 1.0);
   }
 
   update () {
     this._resize();
-    this._gl.clear(this._gl.COLOR_BUFFER_BIT);
+    this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
+  }
+
+  setCamera (camera) {
+    this._camera = camera;
   }
 
   _resize() {
@@ -25,7 +32,43 @@ export default class PaintBoard {
       this._canvas.width = clientWidth;
       this._canvas.height = clientHeight;
 
+      this._camera.updateAR(clientWidth/clientHeight);
+      // this._camera.updateAR(clientHeight/clientWidth);
       this._gl.viewport(0, 0, this._canvas.width, this._canvas.height);
+    }
+  }
+
+  isKeyActive (code) {
+    return this._keys[code];
+  }
+
+  isButtonActive (button) {
+    return this._buttons[code];
+  }
+
+  bindKeysAndMouse (interceptRightClick=false) {
+    window.addEventListener('keydown', (evt) => {
+      this._keys[evt.keyCode] = true;
+    }, false);
+
+    window.addEventListener('keyup', (evt) => {
+      this._keys[evt.keyCode] = false;
+    });
+
+    window.addEventListener('mousedown', (evt) => {
+      this._buttons[evt.button] = false;
+    });
+
+    window.addEventListener('mouseup', (evt) => {
+      this._buttons[evt.button] = false;
+    });
+
+    if (interceptRightClick) {
+      window.addEventListener('contextmenu', (evt) => {
+        evt.preventDefault();
+
+        return false;
+      });
     }
   }
 
@@ -47,6 +90,9 @@ export default class PaintBoard {
 
     if (!ctx)
       throw new Error('GL instance coudl\'t be set.');
+
+    if (__DEV__)
+      ctx = createDebugContext(ctx);
 
     this._gl = ctx;
   }

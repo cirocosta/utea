@@ -20,6 +20,7 @@ var webpackConfig = {
   entry: {
     'mango': './src/index.js',
     '01-square': './example/01-square/01-square.js',
+    '02-cubes': './example/02-cubes/02-cubes.js',
   },
 
   output: {
@@ -71,6 +72,8 @@ var webpackConfig = {
 
 webpackConfig.addVendor('gl-matrix',
                         'node_modules/gl-matrix/dist/gl-matrix-min.js');
+webpackConfig.addVendor('webgl-debug',
+                         __dirname + '/vendor/webgl-debug.js');
 
 if (envGlobals.__DEV__) {
   webpackConfig.devServer = {

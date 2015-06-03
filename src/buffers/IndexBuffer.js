@@ -1,27 +1,27 @@
 export default class IndexBuffer {
-  constructor (gl) {
+  constructor (gl, indices) {
     this._gl = gl;
-    this._buffer;
+
+    this._buffer = gl.createBuffer();
+    if (!this._buffer)
+      throw new Error('IndexBuffer: Error while creating buffer');
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._buffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+    // public stuff
+    this.count = indices.length;
   }
 
   destruct () {
     this._gl.deleteBuffer(this._buffer);
   }
 
-  // array de UInt16
-  init (indices) {
-    this._buffer = this._gl.createBuffer();
-    if (!this._buffer)
-      throw new Error('Error while creating buffer');
-
-    this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._buffer);
-    this._gl.vertexAttribPointer(gl.ELEMENT_ARRAY_BUFFER, indices);
-    this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, indices,
-                        this._gl.STATIC_DRAW);
-  }
-
   bind () {
-    this._gl.bindBuffer(this._gl.ELEMENT_ARRAY, this._buffer);
+    this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._buffer);
   }
 
+  unbind () {
+    this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, null);
+  }
 };

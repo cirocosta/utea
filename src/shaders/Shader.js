@@ -19,7 +19,17 @@ export default class Shader {
     this._gl.program = this._program;
   }
 
-  disable () { }
+  setUniform4fv (name, data) {
+    this._gl.uniform4fv(this._locations[name], data);
+  }
+
+  setUniform3fv (name, data) {
+    this._gl.uniform3fv(this._locations[name], data);
+  }
+
+  setUniformMatrix4fv (name, data) {
+    this._gl.uniformMatrix4fv(this._locations[name], false, data);
+  }
 
   _getLocations (names) {
     return names.reduce((mem, name) => {
@@ -51,9 +61,12 @@ export default class Shader {
     this._gl.shaderSource(shader, source);
     this._gl.compileShader(shader);
 
-    if (!this._gl.getShaderParameter(shader, this._gl.COMPILE_STATUS))
+    if (!this._gl.getShaderParameter(shader, this._gl.COMPILE_STATUS)) {
+      console.error("Error in the following shader:");
+      console.error(source);
       throw new Error('Shader failed to compile: ' +
                        this._gl.getShaderInfoLog(shader));
+    }
 
     return shader;
   }
