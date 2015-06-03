@@ -1,49 +1,58 @@
-import basicVertex from "./basic.vert";
-import basicFragment from "./basic.frag";
+import vshader from "./basic.vert";
+import fshader from "./basic.frag";
+
 import Shader from "../Shader.js";
 import ArrayBuffer from "../../buffers/ArrayBuffer.js";
 
-export default class BasicShader extends Shader{
+export default class BasicShader extends Shader {
   constructor (gl, color=[1.0, 1.0, 0.0]) {
     super(gl);
     this._gl = gl;
     this.color = color;
-    this.init(basicVertex, basicFragment, [
+    this.init(vshader, fshader, [
       'a_Position', 'a_Color',
       'u_ViewMatrix', 'u_ModelMatrix', 'u_ProjectionMatrix',
     ]);
+    this._buffer = null;
   }
 
-  // TODO create a single buffer that will send
-  //      all of our data
   prepare (geom) {
-    const N = geom.buffers.vbo.count * 3;
+    const N = geom.coords.length * 2;
+    const FLOATS_PER_VERTEX = 6;
     let data = new Float32Array(N);
+    let k = 0;
+    const FSIZE = data.BYTES_PER_ELEMENT;
 
-    for (let i = 0; i < N; i += 3) {
-      data[ i ] = this.color[0];
-      data[i+1] = this.color[1];
-      data[i+2] = this.color[2];
+    for (let i = 0; i < N; i += FLOATS_PER_VERTEX) {
+      data[ i ] = geom.coords[k];
+      data[i+1] = geom.coords[k+1];
+      data[i+2] = geom.coords[k+2];
+      data[i+3] = this.color[0];
+      data[i+4] = this.color[1];
+      data[i+5] = this.color[2];
+
+      k += 3;
     }
 
-    this._colorBuffer = new ArrayBuffer(this._gl, data, 3);
+    this._buffer = new ArrayBuffer(this._gl, data, FLOATS_PER_VERTEX);
+    this._offsetVertex = 0;
+    this._offsetColor = FSIZE * FLOATS_PER_VERTEX/2;
+    this._stride = FSIZE * FLOATS_PER_VERTEX;
   }
 
-  prepareLocations(buffer) {
+  prepareLocations() {
     this.enable();
+    this._buffer.bind();
 
-    // TODO remove all of this binding. This is
-    //      pretty expensive and we MUST not do
-    //      this.
-    this._colorBuffer.bind();
-    this._gl.vertexAttribPointer(this._locations.a_Color,
-      buffer.componentCount, this._gl.FLOAT, false, 0, 0);
-    this._gl.enableVertexAttribArray(this._locations.a_Color);
-
-    buffer.bind();
     this._gl.vertexAttribPointer(this._locations.a_Position,
-      buffer.componentCount, this._gl.FLOAT, false, 0, 0);
+      this._buffer.componentCount/2, this._gl.FLOAT, false,
+      this._stride, this._offsetVertex);
+    this._gl.vertexAttribPointer(this._locations.a_Color,
+      this._buffer.componentCount/2, this._gl.FLOAT, false,
+      this._stride, this._offsetColor);
+
     this._gl.enableVertexAttribArray(this._locations.a_Position);
+    this._gl.enableVertexAttribArray(this._locations.a_Color);
   }
 
 };

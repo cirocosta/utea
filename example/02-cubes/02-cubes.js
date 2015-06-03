@@ -17,29 +17,30 @@ pb.setCamera(camera);
 renderer.submit(renderable);
 
 (function loop () {
-  window.requestAnimationFrame(loop);
-  pb.update();
+    window.requestAnimationFrame(loop);
 
-  if (pb.isKeyActive(65)) {
-    renderable._position[0] -= 0.05;
-    renderable._updateModelMatrix();
-  }
+    pb.update();
 
-  if (pb.isKeyActive(68)) {
-    renderable._position[0] += 0.05;
-    renderable._updateModelMatrix();
-  }
+    if (pb.isKeyActive(65)) {
+      renderable._position[0] -= 0.05;
+      renderable._updateModelMatrix();
+    }
 
-  if (pb.isKeyActive(87)) {
-    renderable._position[1] += 0.05;
-    renderable._updateModelMatrix();
-  }
+    if (pb.isKeyActive(68)) {
+      renderable._position[0] += 0.05;
+      renderable._updateModelMatrix();
+    }
 
-  if (pb.isKeyActive(83)) {
-    renderable._position[1] -= 0.05;
-    renderable._updateModelMatrix();
-  }
+    if (pb.isKeyActive(87)) {
+      renderable._position[1] += 0.05;
+      renderable._updateModelMatrix();
+    }
 
-  renderer.flush();
+    if (pb.isKeyActive(83)) {
+      renderable._position[1] -= 0.05;
+      renderable._updateModelMatrix();
+    }
+
+    renderer.flush();
 })();
 

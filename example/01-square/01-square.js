@@ -1,6 +1,6 @@
 import PaintBoard from "mango/PaintBoard";
 import Renderable from "mango/Renderable";
-import Rectangle from "mango/geometries/Rectangle";
+import Square from "mango/geometries/Square";
 import BasicMaterial from "mango/materials/BasicMaterial";
 import Renderer from "mango/Renderer/";
 import Camera from "mango/Camera";
@@ -12,9 +12,9 @@ let material1 = new BasicMaterial(pb._gl, [1.0, 0.0, 0.0]);
 let material2 = new BasicMaterial(pb._gl, [1.0, 0.0, 1.0]);
 
 let renderable = new Renderable(pb._gl, material1,
-                    new Rectangle(pb._gl, 1.0, 1.0));
+                    new Square(pb._gl, 1.0, 1.0));
 let renderable2 = new Renderable(pb._gl, material2,
-                     new Rectangle(pb._gl, -1.0, -1.0));
+                     new Square(pb._gl, -1.0, -1.0));
 let camera = new Camera();
 let renderer = new Renderer(camera);
 
@@ -45,7 +45,6 @@ renderer.submit(renderable2);
     camera._position[0] += 0.1;
     camera._updateView();
   }
-
 
   renderer.flush();
 })();

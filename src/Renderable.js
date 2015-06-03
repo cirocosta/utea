@@ -32,10 +32,9 @@ export default class Renderable {
                                 camera._viewMatrix);
     this._shader.setUniform4fv('u_ProjectionMatrix',
                                 camera._projectionMatrix);
-    this._buffers.vbo.bind();
-    this._shader.prepareLocations(this._buffers.vbo);
-    this._buffers.ibo.bind();
+    this._shader.prepareLocations();
 
+    this._buffers.ibo.bind();
     this._gl.drawElements(this._gl.TRIANGLES, this._buffers.ibo.count,
                           this._gl.UNSIGNED_SHORT, 0);
   }

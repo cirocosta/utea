@@ -9,8 +9,7 @@ export default class Renderer {
   }
 
   flush () {
-    for (let renderable of this._renderQueue) {
+    for (let renderable of this._renderQueue)
       renderable.draw(this._camera);
-    }
   }
 };
