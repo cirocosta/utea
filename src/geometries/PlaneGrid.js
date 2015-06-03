@@ -18,28 +18,28 @@ export default class PlaneGrid {
     let k = 0; // indices index
 
     for (let i = -mult; i <= mult; i++) {
-      console.log(c);
-      this.coords[c++] = i; // bottom
-      this.coords[c++] = -mult,
-      this.coords[c++] = 0.0;
+      this.coords[c] = i; // bottom
+      this.coords[c+1] = -mult,
+      this.coords[c+2] = 0.0;
       this.indices[k] = k++;
 
-      this.coords[c++] = i; // top
-      this.coords[c++] = mult;
-      this.coords[c++] = 0.0;
+      this.coords[c+3] = i; // top
+      this.coords[c+4] = mult;
+      this.coords[c+5] = 0.0;
       this.indices[k] = k++;
 
-      this.coords[c++] = -mult; // left
-      this.coords[c++] = i,
-      this.coords[c++] = 0.0;
+      this.coords[c+6] = -mult; // left
+      this.coords[c+7] = i,
+      this.coords[c+8] = 0.0;
       this.indices[k] = k++;
 
-      this.coords[c++] = mult; // right
-      this.coords[c++] = i,
-      this.coords[c++] = 0.0;
+      this.coords[c+9] = mult; // right
+      this.coords[c+10] = i,
+      this.coords[c+11] = 0.0;
       this.indices[k] = k++;
+
+      c += 12;
     }
-
 
     this.buffers.ibo = new IndexBuffer(gl, this.indices);
   }
