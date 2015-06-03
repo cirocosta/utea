@@ -55,5 +55,11 @@ export default class BasicShader extends Shader {
     this._gl.enableVertexAttribArray(this._locations.a_Color);
   }
 
+  prepareUniforms (renderable, camera) {
+    this.setUniformMatrix4fv('u_ModelMatrix', renderable._modelMatrix);
+    this.setUniformMatrix4fv('u_ViewMatrix', camera._viewMatrix);
+    this.setUniformMatrix4fv('u_ProjectionMatrix', camera._projectionMatrix);
+  }
+
 };
 
