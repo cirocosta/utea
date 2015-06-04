@@ -1,4 +1,3 @@
-import ArrayBuffer from "../buffers/ArrayBuffer.js";
 import IndexBuffer from "../buffers/IndexBuffer.js";
 
 export default class Cube {

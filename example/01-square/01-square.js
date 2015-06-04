@@ -18,6 +18,8 @@ let renderable2 = new Renderable(pb._gl, material2,
 let camera = new Camera();
 let renderer = new Renderer(camera);
 
+camera.position = [0.0, 0.0, -1.0];
+camera.at = [0.0, 0.0, 100.0];
 pb.setCamera(camera);
 renderer.submit(renderable);
 renderer.submit(renderable2);
@@ -26,25 +28,17 @@ renderer.submit(renderable2);
   window.requestAnimationFrame(loop);
   pb.update();
 
-  if (pb.isKeyActive(87)) { // w
-    camera._position[2] -= 0.1;
-    camera._updateView();
-  }
+  if (pb.isKeyActive(65))
+    camera.incrementPosition(-0.05);
 
-  if (pb.isKeyActive(65)) { // a
-    camera._position[0] -= 0.1;
-    camera._updateView();
-  }
+  if (pb.isKeyActive(68))
+    camera.incrementPosition(0.05);
 
-  if (pb.isKeyActive(83)) { // s
-    camera._position[2] += 0.1;
-    camera._updateView();
-  }
+  if (pb.isKeyActive(87))
+    camera.incrementPosition(0.0, 0.05);
 
-  if (pb.isKeyActive(68)) { // d
-    camera._position[0] += 0.1;
-    camera._updateView();
-  }
+  if (pb.isKeyActive(83))
+    camera.incrementPosition(0.0, -0.05);
 
   renderer.flush();
 })();

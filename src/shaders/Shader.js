@@ -3,6 +3,14 @@ export default class Shader {
     this._gl = gl;
     this._program;
     this._locations = {};
+
+    // virtual
+    if (this.prepare == undefined)
+      throw new TypeError('Shader::prepare must be declared');
+    if (this.prepareUniforms == undefined)
+      throw new TypeError('Shader::prepareUniforms must be declared');
+    if (this.prepareLocations == undefined)
+      throw new TypeError('Shader::prepareLocations must be declared');
   }
 
   init (vshader, fshader, names) {
