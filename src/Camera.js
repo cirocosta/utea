@@ -1,4 +1,4 @@
-import {mat4} from "gl-matrix";
+import {vec3, mat4} from "gl-matrix";
 
 const deg_to_rad = (deg) => deg*Math.PI/180.0;
 
@@ -27,7 +27,10 @@ const deg_to_rad = (deg) => deg*Math.PI/180.0;
  *  there you go!
  */
 export default class Camera {
-  constructor (fov=70, near=0.1, far=100) {
+  constructor (fov=70, near=0.1, far=1000) {
+    this._dirtyView = true;
+    this._dirtyProjection = true;
+
     // perspective camera parametrization
     this._fov = fov;
     this._near = near;
@@ -35,40 +38,67 @@ export default class Camera {
     this._ar = 1.0;
 
     // default camera positioning
-    this._at = [0.0, 0.0, 0.0];
-    this._position = [0.0, 0.0, -1.0];
-    this._up = [0.0, 1.0, 0.0];
+    this._at = vec3.create();
+    this._position = vec3.clone([0.0, 0.0, -1.0]);
+    this._up = vec3.clone([0.0, 1.0, 0.0]);
 
     // internal matrices
     this._viewMatrix = mat4.create();
     this._projectionMatrix = mat4.create();
-
-    // private methods
-    this._updateProjection();
-    this._updateView();
   }
 
-  updateView (at, pos, up) {
-    this._at = at;
-    this._position = pos;
-    this._up = up;
+  get position () { return this._position; }
+  get at () { return this._at; }
+  get up () { return this._up; }
+  get ar () { return this._ar; }
+  get fov () { return this._fov; }
 
-    this._updateView();
+  set position (value) {
+    this._position = value;
+    this._dirtyView = true;
   }
 
-  updateAR (ar) {
-    this._ar = ar;
-    this._updateProjection();
+  set at (value) {
+    this._at = value;
+    this._dirtyView = true;
   }
 
-  _updateView () {
-    mat4.lookAt(this._viewMatrix, this._position, this._at, this._up);
-    mat4.invert(this._viewMatrix, this._viewMatrix);
+  set up (value) {
+    this._up = value;
+    this._dirtyView = true;
   }
 
-  _updateProjection () {
-    mat4.identity(this._projectionMatrix);
-    mat4.perspective(this._projectionMatrix, deg_to_rad(this._fov),
-      this._ar, this._near, this._far);
+  set ar (value) {
+    this._ar = value;
+    this._dirtyProjection = true;
   }
+
+  set fov (value) {
+    this._fov = value;
+    this._dirtyProjection = true;
+  }
+
+  incrementPosition (x, y=0.0, z=0.0) {
+    this._position[0] += x;
+    this._position[1] += y;
+    this._position[2] += z;
+
+    this._dirtyView = true;
+  }
+
+  prepare () {
+    if (this._dirtyView) {
+      mat4.lookAt(this._viewMatrix, this._position, this._at, this._up);
+      mat4.invert(this._viewMatrix, this._viewMatrix);
+    }
+
+    if (this._dirtyProjection) {
+      mat4.perspective(this._projectionMatrix, deg_to_rad(this._fov),
+        this._ar, this._near, this._far);
+    }
+
+    this._dirtyView = false;
+    this._dirtyProjection = false;
+  }
+
 };

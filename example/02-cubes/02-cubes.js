@@ -21,24 +21,24 @@ pb.setCamera(camera);
 renderer.submit(cube);
 renderer.submit(grid);
 
-camera._position = [2.0, 0.0, -3.0];
-camera._updateView();
+camera.position = [2.0, 0.0, -3.0];
+camera.at = [0.0, 0.0, 100.0];
 
 (function loop () {
     window.requestAnimationFrame(loop);
     pb.update();
 
     if (pb.isKeyActive(65))
-      cube.incrementPosition(-0.05);
+      camera.incrementPosition(-0.05);
 
     if (pb.isKeyActive(68))
-      cube.incrementPosition(0.05);
+      camera.incrementPosition(0.05);
 
     if (pb.isKeyActive(87))
-      cube.incrementPosition(0.0, 0.05);
+      camera.incrementPosition(0.0, 0.0, 0.05);
 
     if (pb.isKeyActive(83))
-      cube.incrementPosition(0.0, -0.05);
+      camera.incrementPosition(0.0, 0.0, -0.05);
 
     renderer.flush();
 })();
