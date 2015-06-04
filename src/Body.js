@@ -1,4 +1,5 @@
 import {mat4, quat, vec3} from "gl-matrix";
+const deg_to_rad = (deg) => deg*Math.PI/180.0;
 
 export default class Body {
   constructor (updateNormals=true) {
@@ -35,8 +36,8 @@ export default class Body {
     this._dirty = true;
   }
 
-  rotate (axis, rad) {
-    quat.setAxisAngle(this._rotation, axis, rad);
+  rotate (axis, deg) {
+    quat.setAxisAngle(this._rotation, axis, deg_to_rad(deg));
     vec3.transformQuat(this._at, this._at, this._rotation);
     this._dirty = true;
   }

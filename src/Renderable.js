@@ -1,16 +1,15 @@
 import Body from "./Body.js";
 
 export default class Renderable extends Body {
-  constructor (gl, material, geom, meshgrid=false) {
+  constructor (gl, props) {
     super();
 
     this._gl = gl;
-    this._buffers = geom.buffers;
-    this._shader = material.shader;
-    this._material = material;
-    this._drawMode = meshgrid ? gl.LINES : gl.TRIANGLES;
-
-    this._material.prepare(geom);
+    this._buffers = props.geometry.buffers;
+    this._shader = props.material.shader;
+    this._material = props.material;
+    this._drawMode = props.drawMode ? gl[props.drawMode] : gl.TRIANGLES;
+    this._material.prepare(props.geometry);
   }
 
   draw (camera) {

@@ -8,21 +8,19 @@ import Camera from "mango/Camera";
 let pb = new PaintBoard(document.querySelector("canvas"));
 pb.bindKeysAndMouse(true);
 
-let material1 = new BasicMaterial(pb._gl, [1.0, 0.0, 0.0]);
-let material2 = new BasicMaterial(pb._gl, [1.0, 0.0, 1.0]);
-
-let renderable = new Renderable(pb._gl, material1,
-                    new Square(pb._gl, 1.0, 1.0));
-let renderable2 = new Renderable(pb._gl, material2,
-                     new Square(pb._gl, -1.0, -1.0));
 let camera = new Camera();
 let renderer = new Renderer(camera);
+let renderable = new Renderable(pb._gl, {
+  geometry: new Square(pb._gl),
+  material: new BasicMaterial(pb._gl, [1.0, 0.0, 0.0]),
+  drawMode: 'LINE_STRIP'
+});
 
 camera.position = [0.0, 0.0, -1.0];
 camera.at = [0.0, 0.0, 100.0];
+
 pb.setCamera(camera);
 renderer.submit(renderable);
-renderer.submit(renderable2);
 
 (function loop () {
   window.requestAnimationFrame(loop);
