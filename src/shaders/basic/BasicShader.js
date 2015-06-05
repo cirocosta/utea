@@ -1,3 +1,5 @@
+import {mat4} from "gl-matrix";
+
 import vshader from "./basic.vert";
 import fshader from "./basic.frag";
 
@@ -11,7 +13,7 @@ export default class BasicShader extends Shader {
     this.color = color;
     this.init(vshader, fshader, [
       'a_Position', 'a_Color',
-      'u_ViewMatrix', 'u_ModelMatrix', 'u_ProjectionMatrix',
+      'u_Mvp',
     ]);
     this._buffer = null;
   }
@@ -56,9 +58,8 @@ export default class BasicShader extends Shader {
   }
 
   prepareUniforms (renderable, camera) {
-    this.setUniformMatrix4fv('u_ModelMatrix', renderable._modelMatrix);
-    this.setUniformMatrix4fv('u_ViewMatrix', camera._viewMatrix);
-    this.setUniformMatrix4fv('u_ProjectionMatrix', camera._projectionMatrix);
+    this.setUniformMatrix4fv('u_Mvp', mat4.multiply(mat4.create(),
+      camera.projectionViewMatrix, renderable.modelMatrix));
   }
 
 };

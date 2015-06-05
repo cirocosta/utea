@@ -6,20 +6,39 @@ export default class Body {
     if (this.constructor == Body)
       throw new TypeError("Body can't be instantiated directly.");
 
-    this._updateNormals = updateNormals;
     this._dirty = true;
-    this._rotation = quat.create();
-    this._modelMatrix = mat4.create();
-    this._normalMatrix = mat4.create();
+    this._updateNormals = updateNormals;
 
     this._at = vec3.clone([0.0, 0.0, 1.0]);
     this._position = vec3.create();
     this._scale = vec3.clone([1.0, 1.0, 1.0]);
+    this._rotation = quat.create();
+
+    this._modelMatrix = mat4.create();
+    this._normalMatrix = mat4.create();
   }
 
   get position () { return this._position; }
   get at () { return this._at; }
   get scale () { return this._scale; }
+
+  get modelMatrix () {
+    if (this._dirty) {
+      this._updateModelMatrix();
+      this._dirty = false;
+    }
+
+    return this._modelMatrix;
+  }
+
+  get normalMatrix () {
+    if (this._dirty) {
+      this._updateModelMatrix();
+      this._dirty = false;
+    }
+
+    return this._normalMatrix;
+  }
 
   set position (value) {
     this._position = value;
@@ -36,8 +55,8 @@ export default class Body {
     this._dirty = true;
   }
 
-  rotate (axis, deg) {
-    quat.setAxisAngle(this._rotation, axis, deg_to_rad(deg));
+  rotate (axis, rad) {
+    quat.setAxisAngle(this._rotation, axis, rad);
     vec3.transformQuat(this._at, this._at, this._rotation);
     this._dirty = true;
   }
@@ -46,14 +65,10 @@ export default class Body {
     this._position[0] += x;
     this._position[1] += y;
     this._position[2] += z;
-
     this._dirty = true;
   }
 
-  prepare () {
-    if (!this._dirty)
-      return;
-
+  _updateModelMatrix () {
     mat4.fromQuat(this._modelMatrix, this._rotation);
     mat4.scale(this._modelMatrix, this._modelMatrix, this._scale);
     mat4.translate(this._modelMatrix, this._modelMatrix, this._position);
@@ -62,7 +77,5 @@ export default class Body {
       mat4.invert(this._normalMatrix, this._modelMatrix);
       mat4.transpose(this._normalMatrix, this._normalMatrix);
     }
-
-    this._dirty = false;
   }
 };

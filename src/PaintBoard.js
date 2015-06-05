@@ -33,7 +33,9 @@ export default class PaintBoard {
       this._canvas.height = clientHeight;
 
       this._camera.ar = clientWidth/clientHeight;
-      this._gl.viewport(0, 0, this._canvas.width, this._canvas.height);
+      this._camera._width = clientWidth;
+      this._camera._height = clientHeight;
+      this._gl.viewport(0, 0, clientWidth, clientHeight);
     }
   }
 
@@ -45,30 +47,40 @@ export default class PaintBoard {
     return this._buttons[code];
   }
 
-  bindKeysAndMouse (interceptRightClick=false) {
-    window.addEventListener('keydown', (evt) => {
-      this._keys[evt.keyCode] = true;
-    }, false);
+  bindControls (props={}) {
+    props.keys = props.keys || true;
+    props.mouse = props.mouse || true;
+    props.interceptRightClick = props.interceptRightClick || false;
 
-    window.addEventListener('keyup', (evt) => {
-      this._keys[evt.keyCode] = false;
-    });
+    if (props.keys) {
+      window.addEventListener('keydown', (evt) => {
+        this._keys[evt.keyCode] = true;
+      }, false);
 
-    window.addEventListener('mousedown', (evt) => {
-      this._buttons[evt.button] = false;
-    });
+      window.addEventListener('keyup', (evt) => {
+        this._keys[evt.keyCode] = false;
+      });
+    }
 
-    window.addEventListener('mouseup', (evt) => {
-      this._buttons[evt.button] = false;
-    });
+    if (props.mouse) {
+      window.addEventListener('mousedown', (evt) => {
+        this._buttons[evt.button] = false;
+      });
 
-    if (interceptRightClick) {
+      window.addEventListener('mouseup', (evt) => {
+        this._buttons[evt.button] = false;
+      });
+    }
+
+    if (props.interceptRightClick) {
       window.addEventListener('contextmenu', (evt) => {
         evt.preventDefault();
-
         return false;
       });
     }
+
+    if (props.onClick)
+      this._canvas.addEventListener('click', props.onClick);
   }
 
   _create3DContext () {

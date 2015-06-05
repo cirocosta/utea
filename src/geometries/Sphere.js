@@ -3,7 +3,6 @@ import IndexBuffer from "../buffers/IndexBuffer.js";
 export default class Sphere {
   constructor (gl, r=1.0, incr = 0.1) {
     const N = Math.floor(Math.PI*2/incr) * Math.floor(Math.PI/incr) * 3;
-    this.buffers = {ibo: null};
     this.coords = new Float32Array(N);
     this.indices = new Uint16Array(N/3);
 
@@ -23,7 +22,7 @@ export default class Sphere {
       }
     }
 
-    this.buffers.ibo = new IndexBuffer(gl, this.indices);
+    this.ibo = new IndexBuffer(gl, this.indices);
   }
 
   get normals () {

@@ -6,8 +6,6 @@ import Renderer from "mango/Renderer/";
 import Camera from "mango/Camera";
 
 let pb = new PaintBoard(document.querySelector("canvas"));
-pb.bindKeysAndMouse(true);
-
 let camera = new Camera();
 let renderer = new Renderer(camera);
 let renderable = new Renderable(pb._gl, {
@@ -16,9 +14,10 @@ let renderable = new Renderable(pb._gl, {
   drawMode: 'LINE_STRIP'
 });
 
-camera.position = [0.0, 0.0, -1.0];
+camera.position = [0.0, 0.0, -2.0];
 camera.at = [0.0, 0.0, 100.0];
 
+pb.bindControls();
 pb.setCamera(camera);
 renderer.submit(renderable);
 

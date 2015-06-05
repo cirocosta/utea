@@ -4,8 +4,8 @@ export default class Renderer {
     this._renderQueue = [];
   }
 
-  submit (renderable) {
-    this._renderQueue.push(renderable);
+  submit () {
+    this._renderQueue.push(...arguments);
   }
 
   flush () {

@@ -15,7 +15,7 @@ export default class NormalsShader extends Shader {
     this.init(vshader, fshader, [
       'a_Position', 'a_Normal',
       'u_matAmb', 'u_matDif', 'u_matSpec',
-      'u_NormalMatrix', 'u_ViewMatrix', 'u_ModelMatrix', 'u_ProjectionMatrix',
+      'u_NormalMatrix', 'u_ModelMatrix', 'u_ProjectionViewMatrix',
     ]);
 
     this._buffer = null;
@@ -47,10 +47,12 @@ export default class NormalsShader extends Shader {
   }
 
   prepareUniforms (renderable, camera) {
-    this.setUniformMatrix4fv('u_ModelMatrix', renderable._modelMatrix);
-    this.setUniformMatrix4fv('u_ViewMatrix', camera._viewMatrix);
-    this.setUniformMatrix4fv('u_ProjectionMatrix', camera._projectionMatrix);
-    this.setUniformMatrix4fv('u_NormalMatrix', renderable._normalMatrix);
+    this.setUniformMatrix4fv('u_ModelMatrix',
+                             renderable.modelMatrix);
+    this.setUniformMatrix4fv('u_NormalMatrix',
+                             renderable.normalMatrix);
+    this.setUniformMatrix4fv('u_ProjectionViewMatrix',
+                             camera.projectionViewMatrix);
 
     this.setUniform4fv('u_matAmb', this.ambient);
     this.setUniform4fv('u_matDif', this.diffuse);
