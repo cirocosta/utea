@@ -32,9 +32,12 @@ export default class PaintBoard {
       this._canvas.width = clientWidth;
       this._canvas.height = clientHeight;
 
-      this._camera.ar = clientWidth/clientHeight;
-      this._camera._width = clientWidth;
-      this._camera._height = clientHeight;
+      if (this._camera) {
+        this._camera.ar = clientWidth/clientHeight;
+        this._camera._width = clientWidth;
+        this._camera._height = clientHeight;
+      }
+
       this._gl.viewport(0, 0, clientWidth, clientHeight);
     }
   }
