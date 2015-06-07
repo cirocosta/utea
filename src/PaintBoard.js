@@ -44,7 +44,7 @@ export default class PaintBoard {
   }
 
   isButtonActive (button) {
-    return this._buttons[code];
+    return this._buttons[button];
   }
 
   bindControls (props={}) {
@@ -64,11 +64,13 @@ export default class PaintBoard {
 
     if (props.mouse) {
       window.addEventListener('mousedown', (evt) => {
-        this._buttons[evt.button] = false;
+        this._buttons[evt.button] = true;
+        props.onMouseDown && props.onMouseDown(evt);
       });
 
       window.addEventListener('mouseup', (evt) => {
         this._buttons[evt.button] = false;
+        props.onMouseUp && props.onMouseUp(evt);
       });
     }
 
@@ -78,6 +80,9 @@ export default class PaintBoard {
         return false;
       });
     }
+
+    if (props.onMouseMove)
+      this._canvas.addEventListener('mousemove', props.onMouseMove);
 
     if (props.onClick)
       this._canvas.addEventListener('click', props.onClick);

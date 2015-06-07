@@ -70,8 +70,8 @@ export default class Body {
 
   _updateModelMatrix () {
     mat4.fromQuat(this._modelMatrix, this._rotation);
-    mat4.scale(this._modelMatrix, this._modelMatrix, this._scale);
     mat4.translate(this._modelMatrix, this._modelMatrix, this._position);
+    mat4.scale(this._modelMatrix, this._modelMatrix, this._scale);
 
     if (this._updateNormals) {
       mat4.invert(this._normalMatrix, this._modelMatrix);

@@ -59,6 +59,11 @@ export default class Camera {
   get ar () { return this._ar; }
   get fov () { return this._fov; }
 
+  set viewMatrix (value) {
+    this._viewMatrix = value;
+    this._dirty = true;
+  }
+
   get projectionViewMatrix () {
     if (this._dirty) {
       this._updateProjectionViewMatrix();
@@ -124,7 +129,6 @@ export default class Camera {
 
   _updateProjectionViewMatrix () {
     mat4.lookAt(this._viewMatrix, this._position, this._at, this._up);
-    mat4.invert(this._viewMatrix, this._viewMatrix);
     mat4.perspective(this._projectionMatrix, deg_to_rad(this._fov),
       this._ar, this._near, this._far);
     mat4.multiply(this._projectionViewMatrix,

@@ -4,7 +4,6 @@ export default class Renderable extends Body {
   constructor (gl, props) {
     super();
 
-    console.log(props.geometry);
     this._gl = gl;
     this._ibo = props.geometry.ibo;
     this._shader = props.material.shader;

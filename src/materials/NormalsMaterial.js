@@ -9,6 +9,7 @@ export default class NormalsMaterial {
    *                          - specular(vec4)
    */
   constructor (gl, matProps) {
+    console.log(matProps);
     if (!matProps) {
       matProps = {
         ambient:  [0.5, 0.5, 0.5, 1.0],
