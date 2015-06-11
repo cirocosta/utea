@@ -14,7 +14,7 @@ import Camera from "mango/Camera";
 let pb = new PaintBoard(document.querySelector("canvas"));
 let camera = new Camera();
 let renderer = new Renderer(camera);
-let arcball = new Arcball(camera, 1.0);
+let arcball = new Arcball(camera, 2.0);
 
 camera.position = [0.0, 0.0, 0.0];
 camera.at = [0.0, 0.0, arcball.radius];
@@ -60,17 +60,14 @@ pb.bindControls({
   mouse: true,
   interceptRightClick: false,
 
-  // onMouseUp: arcball.stop.bind(arcball),
-  // onMouseDown: arcball.start.bind(arcball),
+  onMouseUp: arcball.stop.bind(arcball),
+  onMouseDown: arcball.start.bind(arcball),
   onMouseMove: (evt) => {
     if (!evt.buttons)
       return;
 
     arcball.move(evt);
-    line.at = arcball._endVec;
-    cube.position = [0.0, 0.0, 0.0];
-    camera.position = arcball._endVec;
-    camera.at = [0.0, 0.0, 0.0];
+    line.rotation = arcball.rotation;
   },
 });
 

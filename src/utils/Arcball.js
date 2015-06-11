@@ -5,13 +5,33 @@ export default class Arcball {
     this.radius = radius;
     this._camera = camera;
 
+    // rotation quats
+    this._currRot = quat.create();
+    this._lastRot = quat.create();
+    this._rot = quat.create();
+
     // start and end vectors
     this._startVec = vec3.create();
     this._endVec = vec3.create();
   }
 
+  get rotation () {
+    return this._rot;
+  }
+
+  start (evt) {
+    this._toSphere(this._startVec, evt);
+    this._currRot = quat.clone(this._lastRot);
+  }
+
+  stop (evt) {
+    quat.multiply(this._lastRot, this._lastRot, this._currRot);
+  }
+
   move (evt) {
     this._toSphere(this._endVec, evt);
+    quat.rotationTo(this._currRot, this._startVec, this._endVec);
+    quat.multiply(this._rot, this._lastRot,  this._currRot);
   }
 
   _toSphere (out, evt) {
