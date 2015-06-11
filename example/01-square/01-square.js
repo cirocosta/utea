@@ -3,10 +3,10 @@ import Renderable from "mango/Renderable";
 import Square from "mango/geometries/Square";
 import BasicMaterial from "mango/materials/BasicMaterial";
 import Renderer from "mango/Renderer/";
-import Camera from "mango/Camera";
+import OrthographicCamera from "mango/cameras/OrthographicCamera";
 
 let pb = new PaintBoard(document.querySelector("canvas"));
-let camera = new Camera();
+let camera = new OrthographicCamera();
 let renderer = new Renderer(camera);
 let renderable = new Renderable(pb._gl, {
   geometry: new Square(pb._gl),

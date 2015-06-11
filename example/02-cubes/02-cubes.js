@@ -9,10 +9,10 @@ import PlaneGrid from "mango/geometries/PlaneGrid.js";
 import BasicMaterial from "mango/materials/BasicMaterial";
 import NormalsMaterial from "mango/materials/NormalsMaterial";
 import Renderer from "mango/Renderer/";
-import Camera from "mango/Camera";
+import PerspectiveCamera from "mango/cameras/PerspectiveCamera";
 
 let pb = new PaintBoard(document.querySelector("canvas"));
-let camera = new Camera();
+let camera = new PerspectiveCamera();
 let renderer = new Renderer(camera);
 let arcball = new Arcball(camera, 2.0);
 

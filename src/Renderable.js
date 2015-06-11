@@ -1,6 +1,14 @@
 import Body from "./Body.js";
 
 export default class Renderable extends Body {
+  /**
+   * @param WebGLContext gl
+   * @param Object props {
+   *                        material,
+   *                        geometry,
+   *                        [drawMode]
+   *                     }
+   */
   constructor (gl, props) {
     super();
 

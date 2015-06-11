@@ -15,6 +15,14 @@ export default class PaintBoard {
     this._gl.clearColor(0.0, 0.0, 0.0, 1.0);
   }
 
+  get width () {
+    return this._canvas.width;
+  }
+
+  get height () {
+    return this._canvas.height;
+  }
+
   update () {
     this._resize();
     this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);

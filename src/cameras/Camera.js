@@ -1,6 +1,13 @@
+/**
+ * Base camera
+ */
+
 import {vec3, mat4} from "gl-matrix";
 
-const deg_to_rad = (deg) => deg*Math.PI/180.0;
+const INSTANCING_ERROR_MSG = [
+  "Camera can't be instantiated directly.",
+  "Go with PerspectiveCamera or OrthographicCamera.",
+].join(" ");
 
 /**
  * We have a bunch of global positions that
@@ -28,6 +35,10 @@ const deg_to_rad = (deg) => deg*Math.PI/180.0;
  */
 export default class Camera {
   constructor (fov=70, near=0.1, far=1000) {
+    if (this.constructor == Camera)
+      throw new TypeError(INSTANCING_ERROR_MSG);
+
+    // flags
     this._dirty = true;
     this._dirtyInverse = true;
 
@@ -51,13 +62,16 @@ export default class Camera {
     this._projectionMatrix = mat4.create();
     this._projectionViewMatrix = mat4.create();
     this._inverseProjectionViewMatrix = mat4.create();
+
+    // virtual
+    if (this._updateProjectionViewMatrix == undefined)
+      throw new TypeError('Camera::_updateProjectionViewMatrix not declared');
   }
 
   get position () { return this._position; }
   get at () { return this._at; }
   get up () { return this._up; }
   get ar () { return this._ar; }
-  get fov () { return this._fov; }
 
   set viewMatrix (value) {
     this._viewMatrix = value;
@@ -90,30 +104,28 @@ export default class Camera {
 
   set position (value) {
     this._position = value;
+
     this._dirty = true;
     this._dirtyInverse = true;
   }
 
   set at (value) {
     this._at = value;
+
     this._dirty = true;
     this._dirtyInverse = true;
   }
 
   set up (value) {
     this._up = value;
+
     this._dirty = true;
     this._dirtyInverse = true;
   }
 
   set ar (value) {
     this._ar = value;
-    this._dirty = true;
-    this._dirtyInverse = true;
-  }
 
-  set fov (value) {
-    this._fov = value;
     this._dirty = true;
     this._dirtyInverse = true;
   }
@@ -126,14 +138,5 @@ export default class Camera {
     this._dirty = true;
     this._dirtyInverse = true;
   }
-
-  _updateProjectionViewMatrix () {
-    mat4.lookAt(this._viewMatrix, this._position, this._at, this._up);
-    mat4.perspective(this._projectionMatrix, deg_to_rad(this._fov),
-      this._ar, this._near, this._far);
-    mat4.multiply(this._projectionViewMatrix,
-      this._projectionMatrix, this._viewMatrix);
-  }
-
 };
 
