@@ -26,6 +26,6 @@
     "webpack-dev-server": "^1.9.0"
   },
   "dependencies": {
-    "gl-matrix": "^2.1.0"
+    "gl-matrix": "^2.2.0"
   }
 }

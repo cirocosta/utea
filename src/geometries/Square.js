@@ -3,9 +3,6 @@ import IndexBuffer from "../buffers/IndexBuffer.js";
 
 export default class Square {
   constructor (gl) {
-    this._gl = gl;
-    this.buffers = {ibo: null};
-
     this.coords = new Float32Array([
       -0.5, -0.5, 0.0,
        0.5, -0.5, 0.0,
@@ -19,7 +16,7 @@ export default class Square {
       0.0, 0.0, 1.0,
     ]);
 
-    this.buffers.ibo = new IndexBuffer(gl, new Uint16Array([
+    this.ibo = new IndexBuffer(gl, new Uint16Array([
       0, 1, 2,
       2, 3, 0
     ]));

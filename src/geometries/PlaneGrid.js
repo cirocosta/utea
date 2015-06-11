@@ -10,7 +10,6 @@ export default class PlaneGrid {
   constructor (gl, mult=2.0) {
     const N = 8*mult + 4;
     this._gl = gl;
-    this.buffers = {ibo: null};
     this.coords = new Float32Array(N*3);
     this.indices = new Uint16Array(N);
 
@@ -41,7 +40,7 @@ export default class PlaneGrid {
       c += 12;
     }
 
-    this.buffers.ibo = new IndexBuffer(gl, this.indices);
+    this.ibo = new IndexBuffer(gl, this.indices);
   }
 
 };

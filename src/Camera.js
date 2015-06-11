@@ -28,8 +28,12 @@ const deg_to_rad = (deg) => deg*Math.PI/180.0;
  */
 export default class Camera {
   constructor (fov=70, near=0.1, far=1000) {
-    this._dirtyView = true;
-    this._dirtyProjection = true;
+    this._dirty = true;
+    this._dirtyInverse = true;
+
+    // updated by the paintboard
+    this._width = 0.0;
+    this._height = 0.0;
 
     // perspective camera parametrization
     this._fov = fov;
@@ -45,6 +49,8 @@ export default class Camera {
     // internal matrices
     this._viewMatrix = mat4.create();
     this._projectionMatrix = mat4.create();
+    this._projectionViewMatrix = mat4.create();
+    this._inverseProjectionViewMatrix = mat4.create();
   }
 
   get position () { return this._position; }
@@ -53,29 +59,63 @@ export default class Camera {
   get ar () { return this._ar; }
   get fov () { return this._fov; }
 
+  set viewMatrix (value) {
+    this._viewMatrix = value;
+    this._dirty = true;
+  }
+
+  get projectionViewMatrix () {
+    if (this._dirty) {
+      this._updateProjectionViewMatrix();
+      this._dirty = false;
+    }
+
+    return this._projectionViewMatrix;
+  }
+
+  get inverseProjectionViewMatrix () {
+    if (this._dirty) {
+      this._updateProjectionViewMatrix();
+      this._dirty = false;
+    }
+
+    if (this._dirtyInverse) {
+      mat4.invert(this._inverseProjectionViewMatrix,
+                  this._projectionViewMatrix);
+      this._dirtyInverse = false;
+    }
+
+    return this._inverseProjectionViewMatrix;
+  }
+
   set position (value) {
     this._position = value;
-    this._dirtyView = true;
+    this._dirty = true;
+    this._dirtyInverse = true;
   }
 
   set at (value) {
     this._at = value;
-    this._dirtyView = true;
+    this._dirty = true;
+    this._dirtyInverse = true;
   }
 
   set up (value) {
     this._up = value;
-    this._dirtyView = true;
+    this._dirty = true;
+    this._dirtyInverse = true;
   }
 
   set ar (value) {
     this._ar = value;
-    this._dirtyProjection = true;
+    this._dirty = true;
+    this._dirtyInverse = true;
   }
 
   set fov (value) {
     this._fov = value;
-    this._dirtyProjection = true;
+    this._dirty = true;
+    this._dirtyInverse = true;
   }
 
   incrementPosition (x, y=0.0, z=0.0) {
@@ -83,22 +123,17 @@ export default class Camera {
     this._position[1] += y;
     this._position[2] += z;
 
-    this._dirtyView = true;
+    this._dirty = true;
+    this._dirtyInverse = true;
   }
 
-  prepare () {
-    if (this._dirtyView) {
-      mat4.lookAt(this._viewMatrix, this._position, this._at, this._up);
-      mat4.invert(this._viewMatrix, this._viewMatrix);
-    }
-
-    if (this._dirtyProjection) {
-      mat4.perspective(this._projectionMatrix, deg_to_rad(this._fov),
-        this._ar, this._near, this._far);
-    }
-
-    this._dirtyView = false;
-    this._dirtyProjection = false;
+  _updateProjectionViewMatrix () {
+    mat4.lookAt(this._viewMatrix, this._position, this._at, this._up);
+    mat4.perspective(this._projectionMatrix, deg_to_rad(this._fov),
+      this._ar, this._near, this._far);
+    mat4.multiply(this._projectionViewMatrix,
+      this._projectionMatrix, this._viewMatrix);
   }
 
 };
+
