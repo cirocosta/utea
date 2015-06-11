@@ -61,7 +61,6 @@ export default class Body {
     this._dirty = true;
   }
 
-
   rotate (axis, rad) {
     quat.setAxisAngle(this._rotation, axis, rad);
     vec3.transformQuat(this._at, this._at, this._rotation);

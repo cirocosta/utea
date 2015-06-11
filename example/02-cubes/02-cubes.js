@@ -16,7 +16,7 @@ let camera = new Camera();
 let renderer = new Renderer(camera);
 let arcball = new Arcball(camera, 2.0);
 
-camera.position = [0.0, 0.0, 0.0];
+camera.position = [0.4, 0.0, -0.4];
 camera.at = [0.0, 0.0, arcball.radius];
 
 let cube = new Renderable(pb._gl, {
@@ -49,8 +49,7 @@ let line = new Renderable(pb._gl, {
 cube.scale = [0.2, 0.2, 0.2];
 grid.rotate([1.0, 0.0, 0.0], Math.PI/2);
 grid.position = [0.0, 0.0, 0.5];
-sphere.position = camera.position;
-cube.position = camera.at;
+sphere.position = [0.0, 0.0, 0.0];
 
 pb.setCamera(camera);
 renderer.submit(cube, grid, sphere, line);
@@ -68,6 +67,7 @@ pb.bindControls({
 
     arcball.move(evt);
     line.rotation = arcball.rotation;
+    cube.rotation = arcball.rotation;
   },
 });
 
