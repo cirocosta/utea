@@ -7,13 +7,14 @@ import Shader from "../Shader.js";
 import ArrayBuffer from "../../buffers/ArrayBuffer.js";
 
 export default class BasicShader extends Shader {
-  constructor (gl, color=[1.0, 1.0, 0.0]) {
+  constructor (gl, color=[1.0, 1.0, 0.0], pointSize=1.0) {
     super(gl);
     this._gl = gl;
-    this.color = color;
+    this._color = color;
+    this._pointSize = pointSize;
     this.init(vshader, fshader, [
       'a_Position', 'a_Color',
-      'u_Mvp',
+      'u_Mvp', 'u_PointSize',
     ]);
     this._buffer = null;
   }
@@ -29,9 +30,9 @@ export default class BasicShader extends Shader {
       data[ i ] = geom.coords[k];
       data[i+1] = geom.coords[k+1];
       data[i+2] = geom.coords[k+2];
-      data[i+3] = this.color[0];
-      data[i+4] = this.color[1];
-      data[i+5] = this.color[2];
+      data[i+3] = this._color[0];
+      data[i+4] = this._color[1];
+      data[i+5] = this._color[2];
 
       k += 3;
     }
@@ -60,6 +61,7 @@ export default class BasicShader extends Shader {
   prepareUniforms (renderable, camera) {
     this.setUniformMatrix4fv('u_Mvp', mat4.multiply(mat4.create(),
       camera.projectionViewMatrix, renderable.modelMatrix));
+    this.setUniform1f('u_PointSize', this._pointSize);
   }
 
 };

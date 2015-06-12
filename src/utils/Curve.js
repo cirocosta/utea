@@ -6,7 +6,7 @@ export default class Curve {
   constructor (gl, controlPoints=[[-0.2, 0.2, 0.0]]) {
     this.renderables = {
       controlPoints: new Renderable(gl, {
-        material: new BasicMaterial(gl, [1.0, 0.0, 0.0]),
+        material: new BasicMaterial(gl, [1.0, 0.0, 0.0], 10.0),
         geometry: new Points(gl, controlPoints),
         drawMode: 'POINTS'
       }),

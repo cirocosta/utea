@@ -27,6 +27,10 @@ export default class Shader {
     this._gl.program = this._program;
   }
 
+  setUniform1f (name, data) {
+    this._gl.uniform1f(this._locations[name], data);
+  }
+
   setUniform4fv (name, data) {
     this._gl.uniform4fv(this._locations[name], data);
   }

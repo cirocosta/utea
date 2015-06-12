@@ -5,8 +5,8 @@ import BasicShader from "../shaders/basic/BasicShader";
  * going to be used (uniformly)
  */
 export default class BasicMaterial {
-  constructor (gl, color) {
-    this.shader = new BasicShader(gl, color);
+  constructor (gl, color, pointSize) {
+    this.shader = new BasicShader(gl, color, pointSize);
   }
 
   prepare (geom) {
