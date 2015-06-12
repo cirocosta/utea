@@ -51,7 +51,7 @@ grid.rotate([1.0, 0.0, 0.0], Math.PI/2);
 grid.position = [0.0, 0.0, 0.5];
 sphere.position = [0.0, 0.0, 0.0];
 
-pb.setCamera(camera);
+pb.camera = camera;
 renderer.submit(cube, grid, sphere, line);
 
 pb.bindControls({

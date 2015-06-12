@@ -8,7 +8,7 @@ varying vec4 v_Color;
 void main()
 {
   gl_Position = u_Mvp * a_Position;
-  gl_PointSize = 1.0;
+  gl_PointSize = 3.0;
 
   v_Color = a_Color;
 }

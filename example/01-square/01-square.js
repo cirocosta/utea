@@ -18,7 +18,7 @@ camera.position = [0.0, 0.0, -2.0];
 camera.at = [0.0, 0.0, 100.0];
 
 pb.bindControls();
-pb.setCamera(camera);
+pb.camera = camera;
 renderer.submit(renderable);
 
 (function loop () {

@@ -3,11 +3,12 @@ import Renderable from "mango/Renderable";
 import Points from "mango/geometries/Points";
 
 export default class Curve {
-  constructor (gl, controlPoints=[[-0.2, 0.2]]) {
+  constructor (gl, controlPoints=[[-0.2, 0.2, 0.0]]) {
     this.renderables = {
       controlPoints: new Renderable(gl, {
         material: new BasicMaterial(gl, [1.0, 0.0, 0.0]),
         geometry: new Points(gl, controlPoints),
+        drawMode: 'POINTS'
       }),
       curve: {}
     };

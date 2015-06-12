@@ -34,7 +34,7 @@ const INSTANCING_ERROR_MSG = [
  *  there you go!
  */
 export default class Camera {
-  constructor (fov=70, near=0.1, far=1000) {
+  constructor () {
     if (this.constructor == Camera)
       throw new TypeError(INSTANCING_ERROR_MSG);
 
@@ -45,12 +45,6 @@ export default class Camera {
     // updated by the paintboard
     this._width = 0.0;
     this._height = 0.0;
-
-    // perspective camera parametrization
-    this._fov = fov;
-    this._near = near;
-    this._far = far;
-    this._ar = 1.0;
 
     // default camera positioning
     this._at = vec3.create();
