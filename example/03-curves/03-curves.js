@@ -14,8 +14,6 @@ import Line from "mango/geometries/Line";
 let pb = new PaintBoard(document.querySelector('canvas'));
 let camera = new OrthographicCamera();
 let renderer = new Renderer(camera);
-let brenderer = new BatchRenderer(pb._gl,
-  camera, new BasicMaterial(pb._gl, [0.0, 1.0, 0.0]));
 
 camera.position = [0.0, 0.0, 1.0];
 pb.camera = camera;
@@ -40,7 +38,7 @@ let yAxis = new Renderable(pb._gl, {
   drawMode: 'LINES',
 });
 
-let curve = new Curve(pb._gl, brenderer, [
+let curve = new Curve(pb._gl, camera, [
   new Point(vec3.clone([-0.5, -0.5, 0.0])),
   new Point(vec3.clone([-0.5, 0.5, 0.0])),
   new Point(vec3.clone([0.5, 0.5, 0.0])),
@@ -112,6 +110,6 @@ renderer.submit(grid, xAxis, yAxis);
   window.requestAnimationFrame(loop);
   pb.update();
   renderer.flush();
-  brenderer.flush();
+  curve.render();
 })();
 

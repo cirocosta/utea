@@ -1,28 +1,59 @@
 import {vec3} from "gl-matrix";
+
 import Point from "mango/geometries/Point";
 import BatchRenderer from "mango/renderers/BatchRenderer";
+import BasicMaterial from "mango/materials/BasicMaterial";
+
 
 export default class Curve {
-  constructor (gl, renderer, controls=[]) {
+  constructor (gl, camera, controls=[], iterations=20) {
+    // TODO instead of receiving a geometry,
+    //      optimize this to take a raw
+    //      float32array
     this.points = {
       control: controls,
+      curve: [
+        new Point(vec3.clone([-0.25, -0.25, 0.0])),
+        new Point(vec3.clone([-0.25, 0.25, 0.0])),
+        new Point(vec3.clone([0.25, 0.25, 0.0])),
+        new Point(vec3.clone([0.25, -0.25, 0.0])),
+        ]
+    };
+
+    this.renderers = {
+      control: new BatchRenderer(gl, camera, new BasicMaterial(gl)),
+      curve: new BatchRenderer(gl, camera, new BasicMaterial(gl,
+        [1.0, 1.0, 1.0])),
     };
 
     this._knots = [];
-    this._renderer = renderer;
+    this._iterations = iterations;
 
     for (let point of this.points.control)
-      renderer.submit(point);
+      this.renderers.control.submit(point);
+
+    this._generate();
+    this.updateCurveRenderer();
+  }
+
+  updateCurveRenderer () {
+    for (let point of this.points.curve)
+      this.renderers.curve.submit(point);
+  }
+
+  render () {
+    this.renderers.curve.flush();
+    this.renderers.control.flush();
   }
 
   addControlPoint (point) {
     this.points.control.push(point);
-    this._renderer.submit(point);
+    this.renderers.control.submit(point);
   }
 
   updateControlPoint (index, point) {
     this.points.control[index] = point;
-    this._renderer.update(index, point);
+    this.renderers.control.update(index, point);
   }
 
   intersectsControlPoint (p) {
@@ -33,25 +64,26 @@ export default class Curve {
     return -1;
   }
 
-  _generate (out, controls, k=4, iterations=10) {
-    let n = controls.length/3;
+  _generate (k=3) {
+    let n = this.points.control.length;
 
     if (n < k)
       throw new Error("n < k");
 
+    // TODO just need to regenerate when we change K
     for (let count = 0; count < k+n; count++)
       this._knots.push(count);
 
-    for (let step = 0; step <= iterations; step++) {
+    for (let step = 0; step <= this._iterations; step++) {
       let t = (step/20.0) * (n - (k-1)) + k-1;
       let point = vec3.create();
 
       for (let i=1; i <= n; i++) {
-        let weight = getWeight(i, k, n, t);
-        vec3.scaleAndAdd(point, point, controls[i-1], weight);
+        let weight = this._getWeight(i, k, n, t);
+        vec3.scaleAndAdd(point, point, this.points.control[i-1].coords, weight);
       }
 
-      points[step] = point;
+      this.points.curve[step] = new Point(point);
     }
   }
 
