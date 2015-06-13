@@ -74,9 +74,7 @@ export default class DynamicBuffer extends Buffer {
     this._gl.bufferSubData(this._target, offset * FLOAT32_SIZE, data);
   }
 
-  reset (data, maxSize=30) {
-    this._maxSize = maxSize;
-
+  reset (data) {
     this._gl.bufferData(
       this._target,
       this._maxSize * FLOAT32_SIZE,

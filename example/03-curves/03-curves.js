@@ -41,6 +41,7 @@ let yAxis = new Renderable(pb._gl, {
 let curve = new Curve(pb._gl, camera, [
   new Point(vec3.clone([-0.5, -0.5, 0.0])),
   new Point(vec3.clone([-0.5, 0.5, 0.0])),
+  new Point(vec3.clone([0.0, -0.0, 0.0])),
   new Point(vec3.clone([0.5, 0.5, 0.0])),
   new Point(vec3.clone([0.5, -0.5, 0.0])),
 ]);

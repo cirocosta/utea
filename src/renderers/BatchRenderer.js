@@ -26,6 +26,9 @@ export default class BatchRenderer {
     this._geoms = [];
     this._dynVbo = new DynamicBuffer(gl, [], 6);
     this._shader = material.shader;
+
+    //TODO fix this!
+    this._pointSize = material.pointSize;
   }
 
   submit (geom) {
@@ -38,6 +41,14 @@ export default class BatchRenderer {
     this._dynVbo.update(index, this._shader.mapGeom(geom));
   }
 
+  reset (geomList) {
+    this._dynVbo.bind();
+    this._dynVbo.reset();
+
+    for (let geom of geomList)
+      this._dynVbo.push(this._shader.mapGeom(geom));
+  }
+
   flush () {
     if (!this._dynVbo.count)
       return;
@@ -48,7 +59,7 @@ export default class BatchRenderer {
     // uniforms
     this._shader.setUniformMatrix4fv('u_Mvp',
       this._camera.projectionViewMatrix);
-    this._shader.setUniform1f('u_PointSize', 5.0);
+    this._shader.setUniform1f('u_PointSize', this._pointSize);
 
     // locations
     this._gl.vertexAttribPointer(this._shader._locations.a_Position,

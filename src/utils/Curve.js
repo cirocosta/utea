@@ -12,18 +12,14 @@ export default class Curve {
     //      float32array
     this.points = {
       control: controls,
-      curve: [
-        new Point(vec3.clone([-0.25, -0.25, 0.0])),
-        new Point(vec3.clone([-0.25, 0.25, 0.0])),
-        new Point(vec3.clone([0.25, 0.25, 0.0])),
-        new Point(vec3.clone([0.25, -0.25, 0.0])),
-        ]
+      curve: []
     };
 
     this.renderers = {
-      control: new BatchRenderer(gl, camera, new BasicMaterial(gl)),
+      control: new BatchRenderer(gl, camera, new BasicMaterial(gl,
+        [1.0, 1.0, 0.0], 5.0)),
       curve: new BatchRenderer(gl, camera, new BasicMaterial(gl,
-        [1.0, 1.0, 1.0])),
+        [1.0, 1.0, 1.0], 1.0)),
     };
 
     this._knots = [];
@@ -37,8 +33,8 @@ export default class Curve {
   }
 
   updateCurveRenderer () {
-    for (let point of this.points.curve)
-      this.renderers.curve.submit(point);
+    this._generate();
+    this.renderers.curve.reset(this.points.curve);
   }
 
   render () {
@@ -49,11 +45,15 @@ export default class Curve {
   addControlPoint (point) {
     this.points.control.push(point);
     this.renderers.control.submit(point);
+
+    this.updateCurveRenderer();
   }
 
   updateControlPoint (index, point) {
     this.points.control[index] = point;
     this.renderers.control.update(index, point);
+
+    this.updateCurveRenderer();
   }
 
   intersectsControlPoint (p) {
@@ -64,7 +64,7 @@ export default class Curve {
     return -1;
   }
 
-  _generate (k=3) {
+  _generate (k=4) {
     let n = this.points.control.length;
 
     if (n < k)
@@ -75,14 +75,17 @@ export default class Curve {
       this._knots.push(count);
 
     for (let step = 0; step <= this._iterations; step++) {
-      let t = (step/20.0) * (n - (k-1)) + k-1;
+      let t = (step/this._iterations) * (n - (k-1)) + k-1;
       let point = vec3.create();
 
       for (let i=1; i <= n; i++) {
+        // we can cache the weighting function
         let weight = this._getWeight(i, k, n, t);
         vec3.scaleAndAdd(point, point, this.points.control[i-1].coords, weight);
       }
 
+      // we can optimize this by removing the
+      // Point object creation
       this.points.curve[step] = new Point(point);
     }
   }
