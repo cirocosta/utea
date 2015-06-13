@@ -67,11 +67,6 @@ export default class Camera {
   get up () { return this._up; }
   get ar () { return this._ar; }
 
-  set viewMatrix (value) {
-    this._viewMatrix = value;
-    this._dirty = true;
-  }
-
   get projectionViewMatrix () {
     if (this._dirty) {
       this._updateProjectionViewMatrix();

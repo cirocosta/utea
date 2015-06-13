@@ -1,27 +1,20 @@
-export default class ArrayBuffer {
+import Buffer from "./Buffer.js";
+
+export default class ArrayBuffer extends Buffer {
   constructor (gl, data, componentCount=3) {
-    this._gl = gl;
+    super(gl);
+
     this._buffer = gl.createBuffer();
+    this._target = gl.ARRAY_BUFFER;
 
     if (!this._buffer)
       throw new Error('ArrayBuffer: Error while creating buffer');
 
-    this._gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    gl.bindBuffer(this._target, this._buffer);
+    gl.bufferData(this._target, data, gl.STATIC_DRAW);
 
     this.count = data.length/componentCount;
     this.componentCount = componentCount;
   }
 
-  bind () {
-    this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._buffer);
-  }
-
-  unbind () {
-    this._gl.bindBuffer(this._gl.ARRAY_BUFFER, null);
-  }
-
-  destruct () {
-    this._gl.deleteBuffer(this._buffer);
-  }
 }

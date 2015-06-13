@@ -1,27 +1,19 @@
-export default class IndexBuffer {
-  constructor (gl, indices) {
-    this._gl = gl;
+import Buffer from "./Buffer.js";
 
+export default class IndexBuffer extends Buffer {
+  constructor (gl, indices) {
+    super(gl);
+
+    this._target = gl.ELEMENT_ARRAY_BUFFER;
     this._buffer = gl.createBuffer();
     if (!this._buffer)
       throw new Error('IndexBuffer: Error while creating buffer');
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._buffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+    gl.bindBuffer(this._target, this._buffer);
+    gl.bufferData(this._target, indices, gl.STATIC_DRAW);
 
     // public stuff
     this.count = indices.length;
   }
 
-  destruct () {
-    this._gl.deleteBuffer(this._buffer);
-  }
-
-  bind () {
-    this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._buffer);
-  }
-
-  unbind () {
-    this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, null);
-  }
 };

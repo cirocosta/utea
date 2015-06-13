@@ -8,7 +8,7 @@ import Sphere from "mango/geometries/Sphere";
 import PlaneGrid from "mango/geometries/PlaneGrid.js";
 import BasicMaterial from "mango/materials/BasicMaterial";
 import NormalsMaterial from "mango/materials/NormalsMaterial";
-import Renderer from "mango/Renderer/";
+import Renderer from "mango/renderers/Renderer";
 import PerspectiveCamera from "mango/cameras/PerspectiveCamera";
 
 let pb = new PaintBoard(document.querySelector("canvas"));
