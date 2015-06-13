@@ -46,11 +46,11 @@ class Point {
 
 pb.bindControls({
   onClick: (evt) => {
-    let point = [
+    let point = vec3.clone([
       2*evt.clientX/pb.width - 1,
       1 - 2*evt.clientY/pb.height,
       0.0
-    ];
+    ]);
 
     vec3.transformMat4(point, point, camera.inverseProjectionViewMatrix);
     brenderer.submit(new Point(point));

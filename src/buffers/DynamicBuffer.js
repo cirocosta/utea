@@ -11,12 +11,13 @@ const FLOAT32_SIZE = new Float32Array().BYTES_PER_ELEMENT;
  * recreate the buffer with a bigger size.
  */
 export default class DynamicBuffer extends Buffer {
-  constructor (gl, data=[], componentCount=3, chunkCount=10) {
+  constructor (gl, data=[], componentCount=3, chunkCount=3) {
     super(gl);
 
+    this._maxSize = chunkCount * componentCount;
     this._buffer = gl.createBuffer();
     this._target = gl.ARRAY_BUFFER;
-    this._data = new Float32Array(chunkCount*componentCount);
+    this._data = new Float32Array(this._maxSize);
 
     if (!this._buffer)
       throw new Error("DynamicBuffer: error while allocating buffer");
@@ -24,7 +25,7 @@ export default class DynamicBuffer extends Buffer {
     gl.bindBuffer(this._target, this._buffer);
     gl.bufferData(
       this._target,
-      this._data.length * FLOAT32_SIZE,
+      this._maxSize * FLOAT32_SIZE,
       gl.DYNAMIC_DRAW
     );
 
@@ -38,11 +39,32 @@ export default class DynamicBuffer extends Buffer {
     this.count = data.length/this.componentCount;
   }
 
+  _expand () {
+    this._maxSize *= 2;
+    let d = new Float32Array(this._maxSize);
+    d.set(this._data, 0);
+    this._data = d;
+
+    this._gl.bufferData(
+      this._target,
+      this._maxSize * FLOAT32_SIZE,
+      this._gl.DYNAMIC_DRAW
+    );
+
+    this._gl.bufferSubData(this._target, 0, this._data);
+  }
+
+  /**
+   * @param Float32Array data
+   */
   push (data) {
-    this._data.set(data, this._last);
     this.bind();
-    this._gl.bufferSubData(this._target, this._last*FLOAT32_SIZE,
-      new Float32Array(data));
+
+    if (this._last + data.length > this._maxSize)
+      this._expand();
+
+    this._data.set(data, this._last);
+    this._gl.bufferSubData(this._target, this._last*FLOAT32_SIZE, data);
 
     this._last += data.length;
     this.count += data.length/this.componentCount;
