@@ -28,14 +28,14 @@ export default class BatchRenderer {
     this._shader = material.shader;
   }
 
-  submit (renderable) {
+  submit (geom) {
     this._dynVbo.bind();
-    this._dynVbo.push(this._shader.mapGeom(renderable.geometry));
+    this._dynVbo.push(this._shader.mapGeom(geom));
   }
 
-  update (index, renderable) {
+  update (index, geom) {
     this._dynVbo.bind();
-    this._dynVbo.update(index, this._shader.mapGeom(renderable.geometry));
+    this._dynVbo.update(index, this._shader.mapGeom(geom));
   }
 
   flush () {
@@ -48,7 +48,7 @@ export default class BatchRenderer {
     // uniforms
     this._shader.setUniformMatrix4fv('u_Mvp',
       this._camera.projectionViewMatrix);
-    this._shader.setUniform1f('u_PointSize', 3.0);
+    this._shader.setUniform1f('u_PointSize', 5.0);
 
     // locations
     this._gl.vertexAttribPointer(this._shader._locations.a_Position,
@@ -62,6 +62,7 @@ export default class BatchRenderer {
     this._gl.enableVertexAttribArray(this._shader._locations.a_Color);
 
     // draw
-    this._gl.drawArrays(this._drawMode, 0, this._dynVbo.count);
+    this._gl.drawArrays(this._gl.POINTS, 0, this._dynVbo.count);
+    this._gl.drawArrays(this._gl.LINE_STRIP, 0, this._dynVbo.count);
   }
 };

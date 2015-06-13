@@ -68,6 +68,12 @@ export default class DynamicBuffer extends Buffer {
     this.count += data.length/this.componentCount;
   }
 
+  update (index, data) {
+    let offset = this.componentCount * index;
+    this._data.set(data, offset);
+    this._gl.bufferSubData(this._target, offset * FLOAT32_SIZE, data);
+  }
+
   reset (data, maxSize=30) {
     this._maxSize = maxSize;
 
@@ -81,9 +87,5 @@ export default class DynamicBuffer extends Buffer {
       this._gl.bufferSubData(this._target, 0, data);
   }
 
-  update (index, data) {
-    this._data.set(data, offset);
-    this._gl.bufferSubData(this._target, index*FLOAT32_SIZE, data);
-  }
 };
 

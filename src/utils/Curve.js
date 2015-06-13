@@ -1,30 +1,36 @@
 import {vec3} from "gl-matrix";
-import BasicMaterial from "mango/materials/BasicMaterial";
-import Renderable from "mango/Renderable";
-import Points from "mango/geometries/Points";
-
-class Point {
-  constructor (position) {
-    this.coords = position;
-  }
-};
+import Point from "mango/geometries/Point";
+import BatchRenderer from "mango/renderers/BatchRenderer";
 
 export default class Curve {
-  constructor (gl) {
+  constructor (gl, renderer, controls=[]) {
     this.points = {
-      control: [new Point(vec3.clone([-0.2, 0.2, 0.0])),
-                new Point(vec3.clone([ 0.2, 0.2, 0.0]))],
+      control: controls,
     };
 
     this._knots = [];
-  }
+    this._renderer = renderer;
 
-  updateControlPoint (index) {
-    // this.points.control[index];
+    for (let point of this.points.control)
+      renderer.submit(point);
   }
 
   addControlPoint (point) {
     this.points.control.push(point);
+    this._renderer.submit(point);
+  }
+
+  updateControlPoint (index, point) {
+    this.points.control[index] = point;
+    this._renderer.update(index, point);
+  }
+
+  intersectsControlPoint (p) {
+    for (let i in this.points.control)
+      if (vec3.squaredDistance(p, this.points.control[i].coords) < 0.01)
+        return i;
+
+    return -1;
   }
 
   _generate (out, controls, k=4, iterations=10) {

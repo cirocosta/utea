@@ -70,12 +70,12 @@ export default class PaintBoard {
     }
 
     if (props.mouse) {
-      window.addEventListener('mousedown', (evt) => {
+      this._canvas.addEventListener('mousedown', (evt) => {
         this._buttons[evt.button] = true;
         props.onMouseDown && props.onMouseDown(evt);
       });
 
-      window.addEventListener('mouseup', (evt) => {
+      this._canvas.addEventListener('mouseup', (evt) => {
         this._buttons[evt.button] = false;
         props.onMouseUp && props.onMouseUp(evt);
       });

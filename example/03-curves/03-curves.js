@@ -1,5 +1,6 @@
 import {vec3} from "gl-matrix";
 
+import Point from "mango/geometries/Point";
 import PaintBoard from "mango/PaintBoard";
 import Curve from "mango/utils/Curve";
 import Renderer from "mango/renderers/Renderer";
@@ -12,7 +13,6 @@ import Line from "mango/geometries/Line";
 
 let pb = new PaintBoard(document.querySelector('canvas'));
 let camera = new OrthographicCamera();
-let curve = new Curve(pb._gl);
 let renderer = new Renderer(camera);
 let brenderer = new BatchRenderer(pb._gl,
   camera, new BasicMaterial(pb._gl, [0.0, 1.0, 0.0]));
@@ -25,6 +25,7 @@ let grid = new Renderable(pb._gl, {
   material: new BasicMaterial(pb._gl, [0.3, 0.3, 0.3]),
   drawMode: 'LINES'
 });
+grid.position = [0.0, 0.0, -1.0];
 grid.scale = [.1, .1, .1];
 
 let xAxis = new Renderable(pb._gl, {
@@ -39,29 +40,72 @@ let yAxis = new Renderable(pb._gl, {
   drawMode: 'LINES',
 });
 
-class Point {
-  constructor (position) {
-    this.coords = position;
-  }
+let curve = new Curve(pb._gl, brenderer, [
+  new Point(vec3.clone([-0.5, -0.5, 0.0])),
+  new Point(vec3.clone([-0.5, 0.5, 0.0])),
+  new Point(vec3.clone([0.5, 0.5, 0.0])),
+  new Point(vec3.clone([0.5, -0.5, 0.0])),
+]);
+
+const unproject = (evt, pt) => {
+  vec3.copy(pt, [
+    2*evt.clientX/pb.width - 1,
+    1 - 2*evt.clientY/pb.height,
+    0.0
+  ]);
+
+  vec3.transformMat4(pt, pt, camera.inverseProjectionViewMatrix);
+  pt[2] = 0.0;
 };
 
-pb.bindControls({
-  onClick: (evt) => {
-    let point = vec3.clone([
-      2*evt.clientX/pb.width - 1,
-      1 - 2*evt.clientY/pb.height,
-      0.0
-    ]);
+// GLOBALS
+let point = vec3.create();
+let editMode = 1; // 0 => insert | 1 => edit
+let selectedPoint = -1;
 
-    vec3.transformMat4(point, point, camera.inverseProjectionViewMatrix);
-    brenderer.submit({
-      geometry: new Point(point),
-      material: null
-    });
+document.querySelector("#b-insert").addEventListener('click', () => {
+  editMode = 0;
+});
+
+document.querySelector("#b-edit").addEventListener('click', () => {
+  editMode = 1;
+});
+
+pb.bindControls({
+  onMouseDown: (evt) => {
+    point = vec3.create();
+    unproject(evt, point);
+
+    if (!editMode)
+      return curve.addControlPoint(new Point(point));
+
+    selectedPoint = curve.intersectsControlPoint(point);
+  },
+
+  onMouseMove: (evt) => {
+    if (!editMode)
+      return;
+
+    if (selectedPoint < 0)
+      return;
+
+    unproject(evt, point);
+    curve.updateControlPoint(selectedPoint, new Point(point));
+  },
+
+  onMouseUp: (evt) => {
+    if (!editMode)
+      return;
+
+    if (selectedPoint < 0)
+      return;
+
+    unproject(evt, point);
+    curve.updateControlPoint(selectedPoint, new Point(point));
+    selectedPoint = -1;
   },
 });
 
-brenderer.submit(new Point([0.5, 0.5, 0.0]));
 renderer.submit(grid, xAxis, yAxis);
 
 (function loop () {
