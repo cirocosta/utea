@@ -11,7 +11,7 @@ const FLOAT32_SIZE = new Float32Array().BYTES_PER_ELEMENT;
  * recreate the buffer with a bigger size.
  */
 export default class DynamicBuffer extends Buffer {
-  constructor (gl, data=[], componentCount=3, chunkCount=3) {
+  constructor (gl, data=[], componentCount=3, chunkCount=30) {
     super(gl);
 
     this._maxSize = chunkCount * componentCount;
@@ -58,8 +58,6 @@ export default class DynamicBuffer extends Buffer {
    * @param Float32Array data
    */
   push (data) {
-    this.bind();
-
     if (this._last + data.length > this._maxSize)
       this._expand();
 
@@ -70,7 +68,22 @@ export default class DynamicBuffer extends Buffer {
     this.count += data.length/this.componentCount;
   }
 
-  updateData (offset, data) {
+  reset (data, maxSize=30) {
+    this._maxSize = maxSize;
+
+    this._gl.bufferData(
+      this._target,
+      this._maxSize * FLOAT32_SIZE,
+      this._gl.DYNAMIC_DRAW
+    );
+
+    if (data)
+      this._gl.bufferSubData(this._target, 0, data);
+  }
+
+  update (index, data) {
     this._data.set(data, offset);
+    this._gl.bufferSubData(this._target, index*FLOAT32_SIZE, data);
   }
 };
+

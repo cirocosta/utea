@@ -1,6 +1,24 @@
 import DynamicBuffer from "mango/buffers/DynamicBuffer";
 
+/**
+ * Deciding whether this batchrenderer fits your
+ * needs:
+ *  - you have very similar stuff that uses the
+ *    same shader behind the material
+ *  - you're able to handle model transformations
+ *    on CPU rather than GPU
+ *  - you'll display a bunch of these things.
+ *
+ * Example:
+ *  - 2D sprites!
+ *  - Several points
+ */
 export default class BatchRenderer {
+  /**
+   * @param {WebGLContext} gl
+   * @param {Camera} camera
+   * @param {Material} material base material
+   */
   constructor (gl, camera, material) {
     this._gl = gl;
     this._drawMode = gl.POINTS;
@@ -10,9 +28,14 @@ export default class BatchRenderer {
     this._shader = material.shader;
   }
 
-  submit (geometry) {
-    this._dynVbo.push(this._shader.mapGeom(geometry));
-    console.log(this._dynVbo);
+  submit (renderable) {
+    this._dynVbo.bind();
+    this._dynVbo.push(this._shader.mapGeom(renderable.geometry));
+  }
+
+  update (index, renderable) {
+    this._dynVbo.bind();
+    this._dynVbo.update(index, this._shader.mapGeom(renderable.geometry));
   }
 
   flush () {

@@ -1,4 +1,5 @@
 import {vec3} from "gl-matrix";
+
 import PaintBoard from "mango/PaintBoard";
 import Curve from "mango/utils/Curve";
 import Renderer from "mango/renderers/Renderer";
@@ -53,12 +54,15 @@ pb.bindControls({
     ]);
 
     vec3.transformMat4(point, point, camera.inverseProjectionViewMatrix);
-    brenderer.submit(new Point(point));
+    brenderer.submit({
+      geometry: new Point(point),
+      material: null
+    });
   },
 });
 
 brenderer.submit(new Point([0.5, 0.5, 0.0]));
-renderer.submit(curve.renderables.controlPoints, grid, xAxis, yAxis);
+renderer.submit(grid, xAxis, yAxis);
 
 (function loop () {
   window.requestAnimationFrame(loop);
