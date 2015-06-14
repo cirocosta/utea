@@ -1,6 +1,5 @@
 import {vec3} from "gl-matrix";
 
-import Point from "mango/geometries/Point";
 import PaintBoard from "mango/PaintBoard";
 import Curve from "mango/utils/Curve";
 import Renderer from "mango/renderers/Renderer";
@@ -38,13 +37,13 @@ let yAxis = new Renderable(pb._gl, {
   drawMode: 'LINES',
 });
 
-let curve = new Curve(pb._gl, camera, [
-  new Point(vec3.clone([-0.5, -0.5, 0.0])),
-  new Point(vec3.clone([-0.5, 0.5, 0.0])),
-  new Point(vec3.clone([0.0, -0.0, 0.0])),
-  new Point(vec3.clone([0.5, 0.5, 0.0])),
-  new Point(vec3.clone([0.5, -0.5, 0.0])),
-]);
+let curve = new Curve(pb._gl, camera, new Float32Array([
+  -0.5, -0.5, 0.0,
+  -0.5,  0.5, 0.0,
+   0.0,  0.0, 0.0,
+   0.5,  0.5, 0.0,
+   0.5, -0.5, 0.0,
+]));
 
 const unproject = (evt, pt) => {
   vec3.copy(pt, [
@@ -89,7 +88,10 @@ pb.bindControls({
       return;
 
     unproject(evt, point);
-    curve.updateControlPoint(selectedPoint, new Point(point));
+    curve.updateControlPoint(selectedPoint, point);
+
+    if (~selectedPoint)
+      draw();
   },
 
   onMouseUp: (evt) => {
@@ -100,17 +102,20 @@ pb.bindControls({
       return;
 
     unproject(evt, point);
-    curve.updateControlPoint(selectedPoint, new Point(point));
+    curve.updateControlPoint(selectedPoint, point);
     selectedPoint = -1;
+
+    draw();
   },
 });
 
 renderer.submit(grid, xAxis, yAxis);
 
-(function loop () {
-  window.requestAnimationFrame(loop);
+function draw() {
   pb.update();
   renderer.flush();
   curve.render();
-})();
+}
+
+window.addEventListener('resize', draw);
 

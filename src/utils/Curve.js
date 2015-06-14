@@ -1,18 +1,13 @@
 import {vec3} from "gl-matrix";
 
-import Point from "mango/geometries/Point";
 import BatchRenderer from "mango/renderers/BatchRenderer";
 import BasicMaterial from "mango/materials/BasicMaterial";
 
-
 export default class Curve {
-  constructor (gl, camera, controls=[], iterations=20) {
-    // TODO instead of receiving a geometry,
-    //      optimize this to take a raw
-    //      float32array
+  constructor (gl, camera, control=[], iterations=20) {
     this.points = {
-      control: controls,
-      curve: []
+      control: control,
+      curve: new Float32Array(iterations*3 + 3)
     };
 
     this.renderers = {
@@ -24,17 +19,11 @@ export default class Curve {
 
     this._knots = [];
     this._iterations = iterations;
+    this._tempPoint = vec3.create();
 
-    for (let point of this.points.control)
-      this.renderers.control.submit(point);
-
-    this._generate();
-    this.updateCurveRenderer();
-  }
-
-  updateCurveRenderer () {
-    this._generate();
-    this.renderers.curve.reset(this.points.curve);
+    // generate initial curve w/ control points
+    this.renderers.control.submit(this.points.control);
+    this._updateCurveRenderer();
   }
 
   render () {
@@ -46,47 +35,62 @@ export default class Curve {
     this.points.control.push(point);
     this.renderers.control.submit(point);
 
-    this.updateCurveRenderer();
+    this._updateCurveRenderer();
   }
 
   updateControlPoint (index, point) {
-    this.points.control[index] = point;
+    this.points.control.set(point, index*3);
     this.renderers.control.update(index, point);
-
-    this.updateCurveRenderer();
+    this._updateCurveRenderer();
   }
 
   intersectsControlPoint (p) {
-    for (let i in this.points.control)
-      if (vec3.squaredDistance(p, this.points.control[i].coords) < 0.01)
-        return i;
+    for (let i = 0; i < this.points.control.length; i+=3) {
+      vec3.set(this._tempPoint, this.points.control[ i ],
+                                this.points.control[i+1],
+                                this.points.control[i+2]);
+
+      if (vec3.squaredDistance(p, this._tempPoint) < 0.01)
+        return i/3;
+    }
 
     return -1;
   }
 
-  _generate (k=4) {
-    let n = this.points.control.length;
+  _updateCurveRenderer () {
+    this._generate();
+    this.renderers.curve.reset(this.points.curve);
+  }
+
+  _generate (k=3) {
+    let n = this.points.control.length/3;
+    this._tempPoint[0] = 0.0;
+    this._tempPoint[1] = 0.0;
+    this._tempPoint[2] = 0.0;
 
     if (n < k)
       throw new Error("n < k");
 
-    // TODO just need to regenerate when we change K
-    for (let count = 0; count < k+n; count++)
-      this._knots.push(count);
+    if (!this._knots.length) {
+      for (let count = 0; count < k+n; count++)
+        this._knots.push(count);
+    }
 
     for (let step = 0; step <= this._iterations; step++) {
       let t = (step/this._iterations) * (n - (k-1)) + k-1;
-      let point = vec3.create();
 
-      for (let i=1; i <= n; i++) {
-        // we can cache the weighting function
-        let weight = this._getWeight(i, k, n, t);
-        vec3.scaleAndAdd(point, point, this.points.control[i-1].coords, weight);
+      for (let i=0; i < n; i++) {
+        let weight = this._getWeight(i+1, k, n, t);
+
+        this._tempPoint[0] += this.points.control[i*3 ]*weight;
+        this._tempPoint[1] += this.points.control[i*3+1]*weight;
       }
 
       // we can optimize this by removing the
       // Point object creation
-      this.points.curve[step] = new Point(point);
+      this.points.curve.set(this._tempPoint, step*3);
+      this._tempPoint[0] = 0.0;
+      this._tempPoint[1] = 0.0;
     }
   }
 

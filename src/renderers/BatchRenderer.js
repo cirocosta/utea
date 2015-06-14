@@ -24,29 +24,40 @@ export default class BatchRenderer {
     this._drawMode = gl.POINTS;
     this._camera = camera;
     this._geoms = [];
-    this._dynVbo = new DynamicBuffer(gl, [], 6);
+    this._dynVbo = new DynamicBuffer(gl, material.componentCount);
     this._shader = material.shader;
 
     //TODO fix this!
     this._pointSize = material.pointSize;
   }
 
-  submit (geom) {
+  /**
+   * Adds a new coordinates to the dyanmicbuffer.
+   * This might get a little slower some times
+   * if there's the need of reallocating memory.
+   */
+  submit (coords) {
     this._dynVbo.bind();
-    this._dynVbo.push(this._shader.mapGeom(geom));
+    this._dynVbo.push(this._shader.mapCoords(coords));
   }
 
-  update (index, geom) {
+  /**
+   * Updates coordinates in the internal dynamic
+   * buffer. This won't get slow by reallocating
+   * as this will never happen.
+   */
+  update (index, coords) {
     this._dynVbo.bind();
-    this._dynVbo.update(index, this._shader.mapGeom(geom));
+    this._dynVbo.update(index, this._shader.mapCoords(coords));
   }
 
-  reset (geomList) {
+  /**
+   * Resets the dynamic buffer to an entire new
+   * state with the given coords.
+   */
+  reset (coords) {
     this._dynVbo.bind();
-    this._dynVbo.reset();
-
-    for (let geom of geomList)
-      this._dynVbo.push(this._shader.mapGeom(geom));
+    this._dynVbo.reset(this._shader.mapCoords(coords));
   }
 
   flush () {

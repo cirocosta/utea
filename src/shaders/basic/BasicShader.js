@@ -19,17 +19,17 @@ export default class BasicShader extends Shader {
     this._buffer = null;
   }
 
-  mapGeom (geom) {
-    const N = geom.coords.length * 2;
+  mapCoords (coords) {
+    const N = coords.length * 2;
     const FLOATS_PER_VERTEX = 6;
     let data = new Float32Array(N);
     let k = 0;
     const FSIZE = data.BYTES_PER_ELEMENT;
 
     for (let i = 0; i < N; i += FLOATS_PER_VERTEX) {
-      data[ i ] = geom.coords[k];
-      data[i+1] = geom.coords[k+1];
-      data[i+2] = geom.coords[k+2];
+      data[ i ] = coords[k];
+      data[i+1] = coords[k+1];
+      data[i+2] = coords[k+2];
       data[i+3] = this._color[0];
       data[i+4] = this._color[1];
       data[i+5] = this._color[2];

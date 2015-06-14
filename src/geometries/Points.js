@@ -3,10 +3,16 @@ import IndexBuffer from "mango/buffers/IndexBuffer";
 const flatten = (arr) => [].concat.apply([], arr);
 
 export default class Points {
-  constructor (gl, points=[]) {
+  constructor (gl, points=[], createIbo=true) {
     this.coords = new Float32Array(flatten(points));
-    this.ibo = new IndexBuffer(gl, new Uint16Array(
-      Object.keys(points)
-    ));
+
+    // TODO rethink automatic IBO creation.
+    //      this is only needed on the Renderer,
+    //      not BatchRenderer
+    if (createIbo) {
+      this.ibo = new IndexBuffer(gl, new Uint16Array(
+        Object.keys(points)
+      ));
+    }
   }
 };

@@ -1,6 +1,7 @@
 import Buffer from "./Buffer.js";
 
 const FLOAT32_SIZE = new Float32Array().BYTES_PER_ELEMENT;
+const CHUNK_SIZE = 30;
 
 /**
  * An ARRAY_BUFFER that supports updating the
@@ -11,10 +12,12 @@ const FLOAT32_SIZE = new Float32Array().BYTES_PER_ELEMENT;
  * recreate the buffer with a bigger size.
  */
 export default class DynamicBuffer extends Buffer {
-  constructor (gl, data=[], componentCount=3, chunkCount=30) {
+  constructor (gl, componentCount=3, data=[]) {
     super(gl);
 
-    this._maxSize = chunkCount * componentCount;
+    this.componentCount = componentCount;
+
+    this._maxSize = CHUNK_SIZE * componentCount;
     this._buffer = gl.createBuffer();
     this._target = gl.ARRAY_BUFFER;
     this._data = new Float32Array(this._maxSize);
@@ -23,24 +26,21 @@ export default class DynamicBuffer extends Buffer {
       throw new Error("DynamicBuffer: error while allocating buffer");
 
     gl.bindBuffer(this._target, this._buffer);
-    gl.bufferData(
-      this._target,
-      this._maxSize * FLOAT32_SIZE,
-      gl.DYNAMIC_DRAW
-    );
-
-    if (data.length) {
-      this._data.set(data, 0);
-      gl.bufferSubData(this._target, 0, data);
-    }
-
-    this._last = data.length;
-    this.componentCount = componentCount;
-    this.count = data.length/this.componentCount;
+    this.reset(data);
   }
 
-  _expand () {
-    this._maxSize *= 2;
+  /**
+   * reallocates both GPU buffer CPU mem (_data)
+   * by the required amount of CHUNKS.
+   * Notice: the new size might be smaller.
+   *
+   * @param {number} newSize
+   */
+  _realloc (newSize) {
+    this._maxSize = CHUNK_SIZE;
+    while (this._maxSize < newSize)
+      this._maxSize += CHUNK_SIZE;
+
     let d = new Float32Array(this._maxSize);
     d.set(this._data, 0);
     this._data = d;
@@ -55,11 +55,11 @@ export default class DynamicBuffer extends Buffer {
   }
 
   /**
-   * @param Float32Array data
+   * @param {Float32Array} data
    */
   push (data) {
     if (this._last + data.length > this._maxSize)
-      this._expand();
+      this._realloc(this._last + data.length);
 
     this._data.set(data, this._last);
     this._gl.bufferSubData(this._target, this._last*FLOAT32_SIZE, data);
@@ -68,21 +68,36 @@ export default class DynamicBuffer extends Buffer {
     this.count += data.length/this.componentCount;
   }
 
+  /**
+   * @param {number} index
+   * @param {Float32Array} data
+   */
   update (index, data) {
     let offset = this.componentCount * index;
+
     this._data.set(data, offset);
     this._gl.bufferSubData(this._target, offset * FLOAT32_SIZE, data);
   }
 
+  /**
+   * @param {Float32Array} data optional
+   */
   reset (data) {
-    this._gl.bufferData(
-      this._target,
-      this._maxSize * FLOAT32_SIZE,
-      this._gl.DYNAMIC_DRAW
-    );
+    this._last = data.length;
+    this.count = data.length/this.componentCount;
 
-    if (data)
-      this._gl.bufferSubData(this._target, 0, data);
+    if (!data || !data.length) {
+      this._gl.bufferData(
+        this._target,
+        this._maxSize * FLOAT32_SIZE,
+        this._gl.DYNAMIC_DRAW
+      );
+
+      return;
+    }
+
+    this._data = data;
+    this._gl.bufferData(this._target, data, this._gl.DYNAMIC_DRAW);
   }
 
 };
