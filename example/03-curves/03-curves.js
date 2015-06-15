@@ -56,54 +56,108 @@ const unproject = (evt, pt) => {
   pt[2] = 0.0;
 };
 
-// GLOBALS
-let point = vec3.create();
-let editMode = 1; // 0 => insert | 1 => edit
-let selectedPoint = -1;
+// TODO separate this UI stuff.
+//      We'll also need some kind of Store that
+//      will allow us to exchange data between
+//      different contexts and keep everything
+//      in sync.
 
-document.querySelector("#b-insert").addEventListener('click', () => {
-  editMode = 0;
+// GLOBALS
+let g_point = vec3.create();
+let g_editMode = 0x1; // 0 => insert | 1 => edit
+let g_selectedCp = -1;
+
+const ELEMS = {
+  bMode: document.querySelector("#b-mode"),
+  bClear: document.querySelector("b-clear"),
+  curveType: document.querySelector("#curve-type"),
+
+  widgetIterationsValue: document.querySelector(".widget.iterations span"),
+  widgetIterationsRange: document.querySelector(".widget.iterations input"),
+
+  widgetDegree: document.querySelector(".widget.degree"),
+  widgetDegreeRange: document.querySelector(".widget.degree input"),
+  widgetDegreeValue: document.querySelector(".widget.degree span"),
+
+  widgetVariance: document.querySelector(".widget.variance"),
+  widgetVarianceRange: document.querySelector(".widget.variance input"),
+  widgetVarianceValue: document.querySelector(".widget.variance span"),
+};
+
+ELEMS.bMode.addEventListener('click', (evt) => {
+  g_editMode ^= 0x1;
+
+  if (g_editMode)
+    evt.target.textContent = "INSERT";
+  else
+    evt.target.textContent = "EDIT";
 });
 
-document.querySelector("#b-edit").addEventListener('click', () => {
-  editMode = 1;
+
+ELEMS.curveType.addEventListener('change', (evt) => {
+  switch (evt.target.value) {
+    case "rag":
+    ELEMS.widgetDegree.hidden = true;
+    ELEMS.widgetVariance.hidden = false;
+    break;
+
+    case "nurbs":
+    ELEMS.widgetDegree.hidden = false;
+    ELEMS.widgetVariance.hidden = true;
+    break;
+
+    default:
+      throw new Error("Unrecognized curve type selected.");
+  }
+});
+
+ELEMS.widgetVarianceRange.addEventListener('input', (evt) => {
+  ELEMS.widgetVarianceValue.textContent = evt.target.value;
+});
+
+ELEMS.widgetDegreeRange.addEventListener('input', (evt) => {
+  ELEMS.widgetDegreeValue.textContent = evt.target.value;
+});
+
+ELEMS.widgetIterationsRange.addEventListener('input', (evt) => {
+  ELEMS.widgetIterationsValue.textContent = evt.target.value;
 });
 
 pb.bindControls({
   onMouseDown: (evt) => {
-    point = vec3.create();
-    unproject(evt, point);
+    g_point = vec3.create();
+    unproject(evt, g_point);
 
-    if (!editMode)
-      return curve.addControlPoint(new Point(point));
+    if (!g_editMode)
+      return curve.addControlPoint(g_point);
 
-    selectedPoint = curve.intersectsControlPoint(point);
+    g_selectedCp = curve.intersectsControlPoint(g_point);
   },
 
   onMouseMove: (evt) => {
-    if (!editMode)
+    if (!g_editMode)
       return;
 
-    if (selectedPoint < 0)
+    if (g_selectedCp < 0)
       return;
 
-    unproject(evt, point);
-    curve.updateControlPoint(selectedPoint, point);
+    unproject(evt, g_point);
+    curve.updateControlPoint(g_selectedCp, g_point);
 
-    if (~selectedPoint)
+    if (~g_selectedCp)
       draw();
   },
 
   onMouseUp: (evt) => {
-    if (!editMode)
+    if (!g_editMode)
       return;
 
-    if (selectedPoint < 0)
+    if (g_selectedCp < 0)
       return;
 
-    unproject(evt, point);
-    curve.updateControlPoint(selectedPoint, point);
-    selectedPoint = -1;
+    unproject(evt, g_point);
+    curve.updateControlPoint(g_selectedCp, g_point);
+    g_selectedCp = -1;
 
     draw();
   },

@@ -5,11 +5,30 @@
     <meta name="viewport" content="width=device-width">
     <title>Mango</title>
     <link rel="stylesheet" href="../common.css" type="text/css">
+    <link rel="stylesheet" href="03-curves.css" type="text/css">
   </head>
   <body>
       <div id="selections">
-        <button id="b-insert">INSERT</button>
-        <button id="b-edit">EDIT</button>
+        <button id="b-mode">INSERT</button>
+        <button id="b-clear">CLEAR</button>
+
+        <select id="curve-type" name="curveType">
+          <option value="nurbs" selected>NURBS</option>
+          <option value="rag">RaG</option>
+        </select>
+
+        <div class="widget iterations">
+          <p>Curve Iterations: <span>20</span></p>
+          <input type="range" min="10" max="100" value="20"/>
+        </div>
+        <div class="widget degree">
+          <p>Polynomial Degree: <span>4</span></p>
+          <input type="range" min="1" max="10" value="4"/>
+        </div>
+        <div class="widget variance" hidden="true">
+          <p>Variance: <span>1</span></p>
+          <input type="range" min="0" max="5" value="1"/>
+        </div>
       </div>
 
       <canvas id="canvas"></canvas>

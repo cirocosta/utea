@@ -6,9 +6,10 @@ import BasicMaterial from "mango/materials/BasicMaterial";
 export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
     this.points = {
-      control: control,
+      control: new Float32Array(30),
       curve: new Float32Array(iterations*3 + 3)
     };
+
 
     this.renderers = {
       control: new BatchRenderer(gl, camera, new BasicMaterial(gl,
@@ -21,8 +22,15 @@ export default class Curve {
     this._iterations = iterations;
     this._tempPoint = vec3.create();
 
+    this._controlOffset = control.length;
+    if (control.length) {
+      this.points.control.set(control, 0);
+      this.renderers.control.submit(
+        this.points.control.subarray(0, this._controlOffset)
+      );
+    }
+
     // generate initial curve w/ control points
-    this.renderers.control.submit(this.points.control);
     this._updateCurveRenderer();
   }
 
@@ -32,7 +40,8 @@ export default class Curve {
   }
 
   addControlPoint (point) {
-    this.points.control.push(point);
+    this.points.control.set(point, this._controlOffset);
+    this._controlOffset += point.length;
     this.renderers.control.submit(point);
 
     this._updateCurveRenderer();
@@ -45,7 +54,7 @@ export default class Curve {
   }
 
   intersectsControlPoint (p) {
-    for (let i = 0; i < this.points.control.length; i+=3) {
+    for (let i = 0; i < this._controlOffset; i+=3) {
       vec3.set(this._tempPoint, this.points.control[ i ],
                                 this.points.control[i+1],
                                 this.points.control[i+2]);
@@ -63,7 +72,7 @@ export default class Curve {
   }
 
   _generate (k=3) {
-    let n = this.points.control.length/3;
+    let n = this._controlOffset/3;
     this._tempPoint[0] = 0.0;
     this._tempPoint[1] = 0.0;
     this._tempPoint[2] = 0.0;

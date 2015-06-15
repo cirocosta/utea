@@ -1,0 +1,22 @@
+body {
+  font-family: helvetica;
+}
+
+#selections {
+  text-align: center;
+  background-color: rgba(47, 79, 79, 0.8);
+  color: white;
+  padding: 5px;
+}
+
+.widget span {
+  color: #9DD7EF;
+  font-weight: bold;
+}
+
+button,
+select {
+  background: white;
+  border: none;
+}
+
