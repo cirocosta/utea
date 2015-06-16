@@ -117,10 +117,16 @@ ELEMS.widgetVarianceRange.addEventListener('input', (evt) => {
 
 ELEMS.widgetDegreeRange.addEventListener('input', (evt) => {
   ELEMS.widgetDegreeValue.textContent = evt.target.value;
+  curve.degree = evt.target.value;
+
+  draw();
 });
 
 ELEMS.widgetIterationsRange.addEventListener('input', (evt) => {
   ELEMS.widgetIterationsValue.textContent = evt.target.value;
+  curve.iterations = evt.target.value;
+
+  draw();
 });
 
 pb.bindControls({
@@ -128,8 +134,11 @@ pb.bindControls({
     g_point = vec3.create();
     unproject(evt, g_point);
 
-    if (!g_editMode)
+    if (!g_editMode) { // in insert mode
+      ELEMS.widgetDegreeRange.max = curve.points.control/3;
+
       return curve.addControlPoint(g_point);
+    }
 
     g_selectedCp = curve.intersectsControlPoint(g_point);
   },

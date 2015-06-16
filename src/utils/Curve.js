@@ -10,7 +10,6 @@ export default class Curve {
       curve: new Float32Array(iterations*3 + 3)
     };
 
-
     this.renderers = {
       control: new BatchRenderer(gl, camera, new BasicMaterial(gl,
         [1.0, 1.0, 0.0], 5.0)),
@@ -18,11 +17,14 @@ export default class Curve {
         [1.0, 1.0, 1.0], 1.0)),
     };
 
+    this._knotsCache = {};
     this._knots = [];
     this._iterations = iterations;
     this._tempPoint = vec3.create();
+    this._degree = 3;
 
     this._controlOffset = control.length;
+
     if (control.length) {
       this.points.control.set(control, 0);
       this.renderers.control.submit(
@@ -31,6 +33,17 @@ export default class Curve {
     }
 
     // generate initial curve w/ control points
+    this._updateCurveRenderer();
+  }
+
+  set iterations (iterations) {
+    this._iterations = iterations;
+    this.points.curve = new Float32Array(iterations*3 + 3);
+    this._updateCurveRenderer();
+  }
+
+  set degree (deg) {
+    this._degree = +deg;
     this._updateCurveRenderer();
   }
 
@@ -71,8 +84,11 @@ export default class Curve {
     this.renderers.curve.reset(this.points.curve);
   }
 
-  _generate (k=3) {
+  _generate () {
     let n = this._controlOffset/3;
+    let k = this._degree;
+
+
     this._tempPoint[0] = 0.0;
     this._tempPoint[1] = 0.0;
     this._tempPoint[2] = 0.0;
@@ -80,7 +96,11 @@ export default class Curve {
     if (n < k)
       throw new Error("n < k");
 
-    if (!this._knots.length) {
+    this._knots = this._knotsCache[k];
+    if (!this._knots) {
+      this._knotsCache[k] = [];
+      this._knots = this._knotsCache[k];
+
       for (let count = 0; count < k+n; count++)
         this._knots.push(count);
     }
