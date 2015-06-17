@@ -10,6 +10,7 @@ import Renderable from "mango/Renderable";
 import BasicMaterial from "mango/materials/BasicMaterial";
 import Line from "mango/geometries/Line";
 
+
 let pb = new PaintBoard(document.querySelector('canvas'));
 let camera = new OrthographicCamera();
 let renderer = new Renderer(camera);
@@ -92,7 +93,6 @@ ELEMS.bMode.addEventListener('click', (evt) => {
   else
     evt.target.textContent = "EDIT";
 });
-
 
 ELEMS.curveType.addEventListener('change', (evt) => {
   switch (evt.target.value) {
@@ -181,7 +181,8 @@ function draw() {
   pb.update();
   renderer.flush();
   curve.render();
-}
+};
 
 window.addEventListener('resize', draw);
 
+draw();
