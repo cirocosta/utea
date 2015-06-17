@@ -135,9 +135,12 @@ pb.bindControls({
     unproject(evt, g_point);
 
     if (!g_editMode) { // in insert mode
-      ELEMS.widgetDegreeRange.max = curve.points.control/3;
+      curve.addControlPoint(g_point);
+      ELEMS.widgetDegreeRange.max = curve.controlPointsNumber;
+      console.log(curve.controlPointsNumber);
+      draw();
 
-      return curve.addControlPoint(g_point);
+      return;
     }
 
     g_selectedCp = curve.intersectsControlPoint(g_point);

@@ -1,4 +1,5 @@
 import DynamicBuffer from "mango/buffers/DynamicBuffer";
+import {mat4} from "gl-matrix";
 
 /**
  * Deciding whether this batchrenderer fits your
@@ -14,6 +15,7 @@ import DynamicBuffer from "mango/buffers/DynamicBuffer";
  *  - Several points
  */
 export default class BatchRenderer {
+
   /**
    * @param {WebGLContext} gl
    * @param {Camera} camera
@@ -21,14 +23,11 @@ export default class BatchRenderer {
    */
   constructor (gl, camera, material) {
     this._gl = gl;
-    this._drawMode = gl.POINTS;
+    this._drawModes = [gl.POINTS, gl.LINE_STRIP];
     this._camera = camera;
-    this._geoms = [];
     this._dynVbo = new DynamicBuffer(gl, material.componentCount);
     this._shader = material.shader;
-
-    //TODO fix this!
-    this._pointSize = material.pointSize;
+    this._material = material;
   }
 
   /**
@@ -36,9 +35,11 @@ export default class BatchRenderer {
    * This might get a little slower some times
    * if there's the need of reallocating memory.
    */
-  submit (coords) {
+  submit (geom) {
+    // TODO deffer all bindings to the time of
+    //      flushing
     this._dynVbo.bind();
-    this._dynVbo.push(this._shader.mapCoords(coords));
+    this._dynVbo.push(this._shader.prepare(geom));
   }
 
   /**
@@ -46,18 +47,18 @@ export default class BatchRenderer {
    * buffer. This won't get slow by reallocating
    * as this will never happen.
    */
-  update (index, coords) {
+  update (index, geom) {
     this._dynVbo.bind();
-    this._dynVbo.update(index, this._shader.mapCoords(coords));
+    this._dynVbo.update(index, this._shader.prepare(geom));
   }
 
   /**
    * Resets the dynamic buffer to an entire new
-   * state with the given coords.
+   * state with the given geom.
    */
-  reset (coords) {
+  reset (geom) {
     this._dynVbo.bind();
-    this._dynVbo.reset(this._shader.mapCoords(coords));
+    this._dynVbo.reset(this._shader.prepare(geom));
   }
 
   flush () {
@@ -67,24 +68,12 @@ export default class BatchRenderer {
     this._shader.enable();
     this._dynVbo.bind();
 
-    // uniforms
-    this._shader.setUniformMatrix4fv('u_Mvp',
-      this._camera.projectionViewMatrix);
-    this._shader.setUniform1f('u_PointSize', this._pointSize);
+    this._shader.prepareLocations(this._dynVbo);
+    this._shader.prepareUniforms(
+      {modelMatrix: mat4.create()}, this._camera
+    );
 
-    // locations
-    this._gl.vertexAttribPointer(this._shader._locations.a_Position,
-      this._dynVbo.componentCount/2, this._gl.FLOAT, false,
-      this._shader._stride, this._shader._offsetVertex);
-    this._gl.vertexAttribPointer(this._shader._locations.a_Color,
-      this._dynVbo.componentCount/2, this._gl.FLOAT, false,
-      this._shader._stride, this._shader._offsetColor);
-
-    this._gl.enableVertexAttribArray(this._shader._locations.a_Position);
-    this._gl.enableVertexAttribArray(this._shader._locations.a_Color);
-
-    // draw
-    this._gl.drawArrays(this._gl.POINTS, 0, this._dynVbo.count);
-    this._gl.drawArrays(this._gl.LINE_STRIP, 0, this._dynVbo.count);
+    for (let drawMode of this._drawModes)
+      this._gl.drawArrays(drawMode, 0, this._dynVbo.count);
   }
 };

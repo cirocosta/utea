@@ -5,8 +5,12 @@ import BasicMaterial from "mango/materials/BasicMaterial";
 
 export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
+    // TODO
+    // supports up to 20 control points by now.
+    // If we want to make this dynamic, provide
+    // some array management
     this.points = {
-      control: new Float32Array(30),
+      control: new Float32Array(60),
       curve: new Float32Array(iterations*3 + 3)
     };
 
@@ -27,9 +31,9 @@ export default class Curve {
 
     if (control.length) {
       this.points.control.set(control, 0);
-      this.renderers.control.submit(
-        this.points.control.subarray(0, this._controlOffset)
-      );
+      this.renderers.control.submit({
+        coords: this.points.control.subarray(0, this._controlOffset)
+      });
     }
 
     // generate initial curve w/ control points
@@ -47,6 +51,10 @@ export default class Curve {
     this._updateCurveRenderer();
   }
 
+  get controlPointsNumber () {
+    return this._controlOffset/3;
+  }
+
   render () {
     this.renderers.curve.flush();
     this.renderers.control.flush();
@@ -55,14 +63,14 @@ export default class Curve {
   addControlPoint (point) {
     this.points.control.set(point, this._controlOffset);
     this._controlOffset += point.length;
-    this.renderers.control.submit(point);
+    this.renderers.control.submit({coords: point});
 
     this._updateCurveRenderer();
   }
 
   updateControlPoint (index, point) {
     this.points.control.set(point, index*3);
-    this.renderers.control.update(index, point);
+    this.renderers.control.update(index, {coords: point});
     this._updateCurveRenderer();
   }
 
@@ -81,13 +89,13 @@ export default class Curve {
 
   _updateCurveRenderer () {
     this._generate();
-    this.renderers.curve.reset(this.points.curve);
+    this.renderers.curve.reset({coords: this.points.curve});
   }
 
   _generate () {
     let n = this._controlOffset/3;
     let k = this._degree;
-
+    let hash = (k*1000+n).toString();
 
     this._tempPoint[0] = 0.0;
     this._tempPoint[1] = 0.0;
@@ -96,11 +104,9 @@ export default class Curve {
     if (n < k)
       throw new Error("n < k");
 
-    this._knots = this._knotsCache[k];
+    this._knots = this._knotsCache[hash];
     if (!this._knots) {
-      this._knotsCache[k] = [];
-      this._knots = this._knotsCache[k];
-
+      this._knots = this._knotsCache[hash] = [];
       for (let count = 0; count < k+n; count++)
         this._knots.push(count);
     }
@@ -147,3 +153,4 @@ export default class Curve {
     return subweightA + subweightB;
   }
 };
+

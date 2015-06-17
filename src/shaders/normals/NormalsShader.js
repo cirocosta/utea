@@ -4,7 +4,19 @@ import fshader from "./normals.frag";
 import Shader from "../Shader.js";
 import ArrayBuffer from "../../buffers/ArrayBuffer.js";
 
+const _STRIDE = 6;
+const _FLOAT32_SIZE = new Float32Array().BYTES_PER_ELEMENT;
+const _STRIDE_SIZE = _FLOAT32_SIZE * _STRIDE;
+const _OFFSETS = {
+  vertex: 0,
+  normal: _FLOAT32_SIZE * _STRIDE/2,
+};
+
 export default class NormalsShader extends Shader {
+  _OFFSETS = _OFFSETS;
+  _STRIDE_SIZE = _STRIDE_SIZE;
+  _STRIDE = _STRIDE;
+
   constructor(gl, matProps) {
     super(gl);
     this._gl = gl;
@@ -17,18 +29,14 @@ export default class NormalsShader extends Shader {
       'u_matAmb', 'u_matDif', 'u_matSpec',
       'u_NormalMatrix', 'u_ModelMatrix', 'u_ProjectionViewMatrix',
     ]);
-
-    this._buffer = null;
   }
 
   prepare (geom) {
     const N = geom.coords.length * 2;
-    const FLOATS_PER_VERTEX = 6;
     let data = new Float32Array(N);
-    let k =0;
-    const FSIZE = data.BYTES_PER_ELEMENT;
+    let k = 0;
 
-    for (let i = 0; i < N; i += FLOATS_PER_VERTEX) {
+    for (let i = 0; i < N; i += _STRIDE) {
       data[ i ] = geom.coords[k];
       data[i+1] = geom.coords[k+1];
       data[i+2] = geom.coords[k+2];
@@ -40,10 +48,7 @@ export default class NormalsShader extends Shader {
       k += 3;
     }
 
-    this._buffer = new ArrayBuffer(this._gl, data, FLOATS_PER_VERTEX);
-    this._offsetVertex = 0;
-    this._offsetNormal = FSIZE * FLOATS_PER_VERTEX/2;
-    this._stride = FSIZE * FLOATS_PER_VERTEX;
+    return data;
   }
 
   prepareUniforms (renderable, camera) {
@@ -60,15 +65,12 @@ export default class NormalsShader extends Shader {
   }
 
   prepareLocations (buffer) {
-    this.enable();
-    this._buffer.bind();
-
     this._gl.vertexAttribPointer(this._locations.a_Position,
-      this._buffer.componentCount/2, this._gl.FLOAT, false,
-      this._stride, this._offsetVertex);
+      buffer.componentCount/2, this._gl.FLOAT, false,
+      _STRIDE_SIZE, _OFFSETS.vertex);
     this._gl.vertexAttribPointer(this._locations.a_Normal,
-      this._buffer.componentCount/2, this._gl.FLOAT, false,
-      this._stride, this._offsetNormal);
+      buffer.componentCount/2, this._gl.FLOAT, false,
+      _STRIDE_SIZE, _OFFSETS.normal);
 
     this._gl.enableVertexAttribArray(this._locations.a_Position);
     this._gl.enableVertexAttribArray(this._locations.a_Normal);

@@ -1,4 +1,5 @@
 import Body from "./Body.js";
+import ArrayBuffer from "mango/buffers/ArrayBuffer";
 
 export default class Renderable extends Body {
   /**
@@ -16,14 +17,21 @@ export default class Renderable extends Body {
     this._ibo = props.geometry.ibo;
     this._shader = props.material.shader;
     this._material = props.material;
+    // TODO make it an array like in batchrenderer
     this._drawMode = props.drawMode ? gl[props.drawMode] : gl.TRIANGLES;
-    this._material.prepare(props.geometry);
+
+    this._buffer = new ArrayBuffer(gl,
+      this._shader.prepare(props.geometry),
+      this._shader._STRIDE
+    );
   }
 
   draw (camera) {
     this._shader.enable();
+    this._buffer.bind();
+
     this._shader.prepareUniforms(this, camera);
-    this._shader.prepareLocations();
+    this._shader.prepareLocations(this._buffer);
 
     this._ibo.bind();
     this._gl.drawElements(this._drawMode, this._ibo.count,
