@@ -1,9 +1,9 @@
-import PaintBoard from "mango/PaintBoard";
-import Renderable from "mango/Renderable";
-import Square from "mango/geometries/Square";
-import BasicMaterial from "mango/materials/BasicMaterial";
-import Renderer from "mango/renderers/Renderer/";
-import OrthographicCamera from "mango/cameras/OrthographicCamera";
+import PaintBoard from "utea/PaintBoard";
+import Renderable from "utea/Renderable";
+import Square from "utea/geometries/Square";
+import BasicMaterial from "utea/materials/BasicMaterial";
+import Renderer from "utea/renderers/Renderer/";
+import OrthographicCamera from "utea/cameras/OrthographicCamera";
 
 let pb = new PaintBoard(document.querySelector("canvas"));
 let camera = new OrthographicCamera();

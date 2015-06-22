@@ -1,4 +1,4 @@
-import DynamicBuffer from "mango/buffers/DynamicBuffer";
+import DynamicBuffer from "utea/buffers/DynamicBuffer";
 import {mat4} from "gl-matrix";
 
 /**

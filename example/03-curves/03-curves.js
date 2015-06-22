@@ -1,14 +1,14 @@
 import {vec3} from "gl-matrix";
 
-import PaintBoard from "mango/PaintBoard";
-import Curve from "mango/utils/Curve";
-import Renderer from "mango/renderers/Renderer";
-import BatchRenderer from "mango/renderers/BatchRenderer";
-import OrthographicCamera from "mango/cameras/OrthographicCamera";
-import PlaneGrid from "mango/geometries/PlaneGrid";
-import Renderable from "mango/Renderable";
-import BasicMaterial from "mango/materials/BasicMaterial";
-import Line from "mango/geometries/Line";
+import PaintBoard from "utea/PaintBoard";
+import Curve from "utea/utils/Curve";
+import Renderer from "utea/renderers/Renderer";
+import BatchRenderer from "utea/renderers/BatchRenderer";
+import OrthographicCamera from "utea/cameras/OrthographicCamera";
+import PlaneGrid from "utea/geometries/PlaneGrid";
+import Renderable from "utea/Renderable";
+import BasicMaterial from "utea/materials/BasicMaterial";
+import Line from "utea/geometries/Line";
 
 
 let pb = new PaintBoard(document.querySelector('canvas'));

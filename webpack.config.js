@@ -18,7 +18,7 @@ var webpackConfig = {
   },
 
   entry: {
-    'mango': './src/index.js',
+    'utea': './src/index.js',
     '01-square': './example/01-square/01-square.js',
     '02-cubes': './example/02-cubes/02-cubes.js',
     '03-curves': './example/03-curves/03-curves.js',
@@ -35,7 +35,7 @@ var webpackConfig = {
     extensions: ['', '.js'],
     root: __dirname,
     alias: {
-      mango: __dirname + "/src"
+      utea: __dirname + "/src"
     },
   },
 

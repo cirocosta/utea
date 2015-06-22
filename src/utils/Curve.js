@@ -1,7 +1,7 @@
 import {vec3} from "gl-matrix";
 
-import BatchRenderer from "mango/renderers/BatchRenderer";
-import BasicMaterial from "mango/materials/BasicMaterial";
+import BatchRenderer from "utea/renderers/BatchRenderer";
+import BasicMaterial from "utea/materials/BasicMaterial";
 
 export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {

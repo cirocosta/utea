@@ -1,4 +1,4 @@
-import IndexBuffer from "mango/buffers/IndexBuffer";
+import IndexBuffer from "utea/buffers/IndexBuffer";
 
 const flatten = (arr) => [].concat.apply([], arr);
 

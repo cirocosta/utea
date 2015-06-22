@@ -1,4 +1,4 @@
-# Mango
+# Utea
 
 > A toy WebGL 3D Engine (*with basic 2D support*)
 
