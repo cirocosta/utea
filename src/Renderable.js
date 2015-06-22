@@ -1,5 +1,5 @@
 import Body from "./Body.js";
-import ArrayBuffer from "mango/buffers/ArrayBuffer";
+import VertexBuffer from "mango/buffers/VertexBuffer";
 
 export default class Renderable extends Body {
   /**
@@ -20,7 +20,7 @@ export default class Renderable extends Body {
     // TODO make it an array like in batchrenderer
     this._drawMode = props.drawMode ? gl[props.drawMode] : gl.TRIANGLES;
 
-    this._buffer = new ArrayBuffer(gl,
+    this._buffer = new VertexBuffer(gl,
       this._shader.prepare(props.geometry),
       this._shader._STRIDE
     );

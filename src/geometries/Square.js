@@ -1,4 +1,4 @@
-import ArrayBuffer from "../buffers/ArrayBuffer.js";
+import VertexBuffer from "../buffers/VertexBuffer.js";
 import IndexBuffer from "../buffers/IndexBuffer.js";
 
 export default class Square {
