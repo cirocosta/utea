@@ -2,7 +2,7 @@ import vshader from "./normals.vert";
 import fshader from "./normals.frag";
 
 import Shader from "../Shader.js";
-import ArrayBuffer from "../../buffers/ArrayBuffer.js";
+import VertexBuffer from "../../buffers/VertexBuffer.js";
 
 const _STRIDE = 6;
 const _FLOAT32_SIZE = new Float32Array().BYTES_PER_ELEMENT;

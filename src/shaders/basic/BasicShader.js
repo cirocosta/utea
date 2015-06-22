@@ -2,7 +2,7 @@ import {mat4} from "gl-matrix";
 import vshader from "./basic.vert";
 import fshader from "./basic.frag";
 import Shader from "../Shader.js";
-import ArrayBuffer from "../../buffers/ArrayBuffer.js";
+import VertexBuffer from "../../buffers/VertexBuffer.js";
 
 const FLOAT32_SIZE = new Float32Array().BYTES_PER_ELEMENT;
 const _STRIDE = 6;
