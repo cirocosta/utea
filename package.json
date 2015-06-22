@@ -1,5 +1,5 @@
 {
-  "name": "mango",
+  "name": "utea",
   "version": "0.0.1",
   "description": "",
   "main": "lib/index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AEHO/mango.git"
+    "url": "git+https://github.com/AEHO/utea.git"
   },
   "author": "",
   "license": "GPL-2.0",
   "bugs": {
-    "url": "https://github.com/AEHO/mango/issues"
+    "url": "https://github.com/AEHO/utea/issues"
   },
-  "homepage": "https://github.com/AEHO/mango#readme",
+  "homepage": "https://github.com/AEHO/utea#readme",
   "devDependencies": {
     "babel": "^5.4.7",
     "babel-core": "^5.4.7",

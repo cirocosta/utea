@@ -1,5 +1,5 @@
 import Body from "./Body.js";
-import VertexBuffer from "mango/buffers/VertexBuffer";
+import VertexBuffer from "utea/buffers/VertexBuffer";
 
 export default class Renderable extends Body {
   /**

@@ -1,15 +1,15 @@
 import {mat4, vec3} from "gl-matrix";
-import Arcball from "mango/utils/Arcball";
-import PaintBoard from "mango/PaintBoard";
-import Renderable from "mango/Renderable";
-import Line from "mango/geometries/Line";
-import Cube from "mango/geometries/Cube.js";
-import Sphere from "mango/geometries/Sphere";
-import PlaneGrid from "mango/geometries/PlaneGrid.js";
-import BasicMaterial from "mango/materials/BasicMaterial";
-import NormalsMaterial from "mango/materials/NormalsMaterial";
-import Renderer from "mango/renderers/Renderer";
-import PerspectiveCamera from "mango/cameras/PerspectiveCamera";
+import Arcball from "utea/utils/Arcball";
+import PaintBoard from "utea/PaintBoard";
+import Renderable from "utea/Renderable";
+import Line from "utea/geometries/Line";
+import Cube from "utea/geometries/Cube.js";
+import Sphere from "utea/geometries/Sphere";
+import PlaneGrid from "utea/geometries/PlaneGrid.js";
+import BasicMaterial from "utea/materials/BasicMaterial";
+import NormalsMaterial from "utea/materials/NormalsMaterial";
+import Renderer from "utea/renderers/Renderer";
+import PerspectiveCamera from "utea/cameras/PerspectiveCamera";
 
 let pb = new PaintBoard(document.querySelector("canvas"));
 let camera = new PerspectiveCamera();

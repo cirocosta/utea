@@ -1,4 +1,4 @@
-import Camera from "mango/cameras/Camera";
+import Camera from "utea/cameras/Camera";
 import {mat4} from "gl-matrix";
 
 const deg_to_rad = (deg) => deg*Math.PI/180.0;

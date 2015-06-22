@@ -1,4 +1,4 @@
-import IndexBuffer from "mango/buffers/IndexBuffer";
+import IndexBuffer from "utea/buffers/IndexBuffer";
 
 export default class Line {
   constructor (gl, p0, p1) {
