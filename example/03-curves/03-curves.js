@@ -2,6 +2,7 @@ import {vec3} from "gl-matrix";
 
 import PaintBoard from "utea/PaintBoard";
 import NURBS from "utea/utils/curves/NURBS";
+import RaGs from "utea/utils/curves/RaGs";
 import Renderer from "utea/renderers/Renderer";
 import BatchRenderer from "utea/renderers/BatchRenderer";
 import OrthographicCamera from "utea/cameras/OrthographicCamera";
@@ -135,15 +136,15 @@ pb.bindControls({
     unproject(evt, g_point);
 
     if (!g_editMode) { // in insert mode
-      curve.addControlPoint(g_point);
-      ELEMS.widgetDegreeRange.max = curve.controlPointsNumber;
-      console.log(curve.controlPointsNumber);
+      rags.addControlPoint(g_point);
+      ELEMS.widgetDegreeRange.max = rags.controlPointsNumber;
+      console.log(rags.controlPointsNumber);
       draw();
 
       return;
     }
 
-    g_selectedCp = curve.intersectsControlPoint(g_point);
+    g_selectedCp = rags.intersectsControlPoint(g_point);
   },
 
   onMouseMove: (evt) => {
@@ -154,7 +155,7 @@ pb.bindControls({
       return;
 
     unproject(evt, g_point);
-    curve.updateControlPoint(g_selectedCp, g_point);
+    rags.updateControlPoint(g_selectedCp, g_point);
 
     if (~g_selectedCp)
       draw();
@@ -168,7 +169,7 @@ pb.bindControls({
       return;
 
     unproject(evt, g_point);
-    curve.updateControlPoint(g_selectedCp, g_point);
+    rags.updateControlPoint(g_selectedCp, g_point);
     g_selectedCp = -1;
 
     draw();
@@ -177,10 +178,18 @@ pb.bindControls({
 
 renderer.submit(grid, xAxis, yAxis);
 
+let rags = new RaGs(pb._gl, camera, [
+  -0.5, 0.0, 0.0,
+   0.0, 0.5, 0.0,
+   0.5, 0.5, 0.0,
+   0.5, 0.0, 0.0,
+]);
+
 function draw() {
   pb.update();
   renderer.flush();
-  curve.render();
+  rags.render();
+  // curve.render();
 };
 
 window.addEventListener('resize', draw);

@@ -14,12 +14,7 @@ export default class NURBS extends Curve {
     this._degree = 3;
     this._knots = [];
     this._dirtyKnots = true;
-
-    // must be called by the subclass
-    if (control.length) {
-      this._appendToControlRenderer(control);
-      this._resetCurveRenderer();
-    }
+    this._init(control);
   }
 
   set degree (deg) {
@@ -76,14 +71,14 @@ export default class NURBS extends Curve {
       let denominator = 0;
 
       for (let i=0; i < n; i++) {
-        let weight = this._getWeight(i+1, k, n, t);
+        let blend = this._getWeight(i+1, k, n, t);
 
         this._tempPoint[0] +=
-          this._weights[i] * this.points.control[i*3 ]*weight;
+          this._weights[i] * this.points.control[ i*3 ]*blend;
         this._tempPoint[1] +=
-          this._weights[i] * this.points.control[i*3+1]*weight;
+          this._weights[i] * this.points.control[i*3+1]*blend;
 
-        denominator += this._weights[i] * weight;
+        denominator += this._weights[i] * blend;
       }
 
       this._tempPoint[0] /= denominator;
