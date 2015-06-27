@@ -55,21 +55,6 @@ export default class Curve {
     this.renderers.control.flush();
   }
 
-  // TODO NURBS will override this
-  //      Adding a control point, in the case of
-  //      a NURBS invalidates:
-  //        - weights
-  //        - knots configuration
-  //        - curve
-  //        - control
-  addControlPoint (point) {
-    this.points.control.set(point, this._controlOffset);
-    this._controlOffset += point.length;
-    this.renderers.control.submit({coords: point});
-
-    this._resetCurveRenderer();
-  }
-
   // invalidates: - curve
   //              - control
   updateControlPoint (index, point) {

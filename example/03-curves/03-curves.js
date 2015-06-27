@@ -47,6 +47,7 @@ let curve = new NURBS(pb._gl, camera, new Float32Array([
   -0.5,  0.0, 0.0,
 ]));
 
+// TODO implement unproject inside camera base
 const unproject = (evt, pt) => {
   vec3.copy(pt, [
     2*evt.clientX/pb.width - 1,

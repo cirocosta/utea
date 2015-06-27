@@ -13,15 +13,41 @@ import Curve from "utea/utils/curves/Curve";
 export default class RaGs extends Curve {
   constructor (gl, camera, control=[], iterations=20) {
     super(gl, camera, control, iterations);
+
+    // TODO fix
     this._weights = [1,1,1,1];
-    this._u = [0.0, 0.33, 0.67, 1.0];
+    this._nodes = [0.0, 0.33, 0.67, 1.0];
     this._sigmas = [0.30, 0.30, 0.30, 0.30];
     this._init(control);
+    this._dirtyNodes = false;
+  }
+
+  _updateNodes () {
+    let n = this._controlOffset/3;
+    this._nodes = [];
+
+    for (let i = 0; i < n; i++) {
+      this._nodes.push(i/n);
+      // TODO fix
+      this._sigmas.push(0.30);
+    }
+    this._dirtyNodes = false;
+  }
+
+  // override
+  addControlPoint (point) {
+    this._dirtyNodes = true;
+    this._appendToControlRenderer(point);
+    this._weights.push(1);
+    this._resetCurveRenderer();
   }
 
   _calculate () {
     let n = this._controlOffset/3;
     let u = 0.0;
+
+    if (this._dirtyNodes)
+      this._updateNodes();
 
     // for each increment
     for (let step = 0; step <= this._iterations; step++) {
@@ -53,7 +79,7 @@ export default class RaGs extends Curve {
   }
 
   G (i, u) {
-    return Math.exp(-((u-this._u[i])*(u-this._u[i]))/
+    return Math.exp(-((u-this._nodes[i])*(u-this._nodes[i]))/
                       (this._sigmas[i]*this._sigmas[i]));
   }
 
