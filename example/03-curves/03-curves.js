@@ -1,7 +1,7 @@
 import {vec3} from "gl-matrix";
 
 import PaintBoard from "utea/PaintBoard";
-import Curve from "utea/utils/Curve";
+import NURBS from "utea/utils/curves/NURBS";
 import Renderer from "utea/renderers/Renderer";
 import BatchRenderer from "utea/renderers/BatchRenderer";
 import OrthographicCamera from "utea/cameras/OrthographicCamera";
@@ -38,12 +38,12 @@ let yAxis = new Renderable(pb._gl, {
   drawMode: 'LINES',
 });
 
-let curve = new Curve(pb._gl, camera, new Float32Array([
-  -0.5, -0.5, 0.0,
-  -0.5,  0.5, 0.0,
-   0.0,  0.0, 0.0,
-   0.5,  0.5, 0.0,
-   0.5, -0.5, 0.0,
+let curve = new NURBS(pb._gl, camera, new Float32Array([
+  -0.5,  0.0, 0.0,
+   0.0,  0.5, 0.0,
+   0.5,  0.0, 0.0,
+   0.0, -0.5, 0.0,
+  -0.5,  0.0, 0.0,
 ]));
 
 const unproject = (evt, pt) => {
