@@ -39,12 +39,18 @@ let yAxis = new Renderable(pb._gl, {
   drawMode: 'LINES',
 });
 
-let curve = new NURBS(pb._gl, camera, new Float32Array([
-  -0.5,  0.0, 0.0,
-   0.0,  0.5, 0.0,
-   0.5,  0.0, 0.0,
-   0.0, -0.5, 0.0,
-  -0.5,  0.0, 0.0,
+let rags = new RaGs(pb._gl, camera, [
+  -0.5, 0.0, 0.0,
+   0.0, 0.5, 0.0,
+   0.5, 0.5, 0.0,
+   0.5, 0.0, 0.0,
+]);
+
+let nurbs = new NURBS(pb._gl, camera, new Float32Array([
+   0.5, 0.0, 0.0,
+   0.0, 0.5, 0.0,
+   0.5, 0.5, 0.0,
+   0.5, 0.0, 0.0,
 ]));
 
 // TODO implement unproject inside camera base
@@ -119,7 +125,7 @@ ELEMS.widgetVarianceRange.addEventListener('input', (evt) => {
 
 ELEMS.widgetDegreeRange.addEventListener('input', (evt) => {
   ELEMS.widgetDegreeValue.textContent = evt.target.value;
-  curve.degree = evt.target.value;
+  nurbs.degree = evt.target.value;
 
   draw();
 });
@@ -179,17 +185,12 @@ pb.bindControls({
 
 renderer.submit(grid, xAxis, yAxis);
 
-let rags = new RaGs(pb._gl, camera, [
-  -0.5, 0.0, 0.0,
-   0.0, 0.5, 0.0,
-   0.5, 0.5, 0.0,
-   0.5, 0.0, 0.0,
-]);
 
 function draw() {
   pb.update();
   renderer.flush();
   rags.render();
+  nurbs.render();
   // curve.render();
 };
 

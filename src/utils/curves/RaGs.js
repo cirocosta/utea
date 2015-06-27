@@ -1,36 +1,38 @@
 import Curve from "utea/utils/curves/Curve";
 
-/**
- * The only difference from another kind of curve
- * is the fact that it might depend on another
- * kind of extra parametrization. In the end it
- * will have:
- * -  control points
- * -  curve points
- * -  controlpoint updates
- * -  curve recalculation
- */
 export default class RaGs extends Curve {
   constructor (gl, camera, control=[], iterations=20) {
     super(gl, camera, control, iterations);
 
-    // TODO fix
-    this._weights = [1,1,1,1];
-    this._nodes = [0.0, 0.33, 0.67, 1.0];
-    this._sigmas = [0.30, 0.30, 0.30, 0.30];
+    this._weights = [];
+    this._nodes = [];
+    this._sigma_sqrd = 0.3*0.3;
+    this._dirtyNodes = true;
     this._init(control);
-    this._dirtyNodes = false;
+  }
+
+  _init (control) {
+    if (!control.length)
+      return;
+
+    this._appendToControlRenderer(control);
+    for (let i = 0; i < this._controlOffset/3; i++)
+      this._weights.push(1.0);
+    this._resetCurveRenderer();
+  }
+
+  set sigma (sig) {
+    sig = +sig;
+    this._sigma_sqrd = sig*sig;
+    this._resetCurveRenderer();
   }
 
   _updateNodes () {
     let n = this._controlOffset/3;
     this._nodes = [];
 
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++)
       this._nodes.push(i/n);
-      // TODO fix
-      this._sigmas.push(0.30);
-    }
     this._dirtyNodes = false;
   }
 
@@ -80,7 +82,7 @@ export default class RaGs extends Curve {
 
   G (i, u) {
     return Math.exp(-((u-this._nodes[i])*(u-this._nodes[i]))/
-                      (this._sigmas[i]*this._sigmas[i]));
+                      (this._sigma_sqrd));
   }
 
 };

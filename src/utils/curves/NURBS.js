@@ -1,20 +1,32 @@
-import {vec3} from "gl-matrix";
-
-import BatchRenderer from "utea/renderers/BatchRenderer";
-import BasicMaterial from "utea/materials/BasicMaterial";
 import Curve from "utea/utils/curves/Curve";
 
 export default class NURBS extends Curve {
-  constructor (gl, camera, control=[], iterations=20, iep=true) {
+  constructor (gl, camera, control=[], iterations=20, iep=false) {
     super(gl, camera, control, iterations);
+
     this._interpolateEndPoints = iep;
-    // TODO fix
-    this._weights = [1/2, 1, 1/2, 1, 1/2];
-    // TODO fix
-    this._degree = 3;
+    this._weights = [];
     this._knots = [];
+    this._degree = 0;
     this._dirtyKnots = true;
     this._init(control);
+  }
+
+  _init (control) {
+    if (!control.length)
+      return;
+
+    this._appendToControlRenderer(control);
+    let n = this._controlOffset/3;
+
+    if (n > 3)
+      this._degree = 3;
+    else
+      this._degree = n - 1;
+
+    for (let i = 0; i < n; i++)
+      this._weights.push(1.0);
+    this._resetCurveRenderer();
   }
 
   set degree (deg) {

@@ -32,13 +32,6 @@ export default class Curve {
     this._controlOffset = 0.0;
   }
 
-  _init (control) {
-    if (control.length) {
-      this._appendToControlRenderer(control);
-      this._resetCurveRenderer();
-    }
-  }
-
   // invalidates: - curve
   set iterations (iterations) {
     this._iterations = iterations;
