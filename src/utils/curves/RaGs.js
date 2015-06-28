@@ -81,18 +81,27 @@ export default class RaGs extends Curve {
 
   g (i, u) {
     let W = this._weights[i];
-    let G_i_u = this.G(i,u);
+    let G_i_u = this.closed_G(i,u);
     let denominator = 0.0;
 
     for (let j = 0; j < this._offset/3; j++)
-      denominator += this._weights[j]*this.G(j,u);
+      denominator += this._weights[j]*this.closed_G(j,u);
 
     return W*G_i_u/denominator;
   }
 
+  closed_G (i, u) {
+    let sum = 0.0;
+    for (let j = -2; j < 2; j++) {
+      let a = (u-(this._nodes[i]+j));
+      sum += Math.exp(-a*a/this._variance*2)
+    }
+
+    return sum;
+  }
+
   G (i, u) {
-    return Math.exp(-((u-this._nodes[i])*(u-this._nodes[i]))/
-                      (this._variance));
+    return Math.exp(-((u-this._nodes[i])*(u-this._nodes[i]))/ this._variance*2);
   }
 
 };
