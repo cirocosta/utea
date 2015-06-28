@@ -9,15 +9,32 @@ export default class NURBS extends Curve {
     this._knots = [];
     this._degree = 0;
     this._dirtyKnots = true;
-    this._init(control);
+    control.length && this._init(control);
+  }
+
+  // TODO kind of redundant ...
+  _reset (control, offset) {
+    let n = offset/3;
+    this._offset = offset;
+    this._dirtyKnots = true;
+    this._weights = [];
+
+    for (let i = 0; i < this._offset/3; i++)
+      this._weights.push(1.0);
+
+    if (n > 3)
+      this._degree = 3;
+    else
+      this._degree = n - 1;
+
+    this.points.control = control;
+    this._resetControlRenderer();
+    this._resetCurveRenderer();
   }
 
   _init (control) {
-    if (!control.length)
-      return;
-
     this._appendToControlRenderer(control);
-    let n = this._controlOffset/3;
+    let n = this._offset/3;
 
     if (n > 3)
       this._degree = 3;
@@ -31,7 +48,7 @@ export default class NURBS extends Curve {
 
   set degree (deg) {
     this._dirtyKnots = true;
-    this._degree = +deg;
+    this._degree = deg;
     this._resetCurveRenderer();
   }
 
@@ -65,7 +82,7 @@ export default class NURBS extends Curve {
   }
 
   _calculate () {
-    let n = this._controlOffset/3;
+    let n = this._offset/3;
     let k = this._degree;
 
     this._tempPoint[0] = 0.0;

@@ -31,7 +31,7 @@ export default class BatchRenderer {
   }
 
   /**
-   * Adds a new coordinates to the dyanmicbuffer.
+   * Adds a new coordinates to the DynamicBuffer.
    * This might get a little slower some times
    * if there's the need of reallocating memory.
    */

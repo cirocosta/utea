@@ -6,29 +6,39 @@ export default class RaGs extends Curve {
 
     this._weights = [];
     this._nodes = [];
-    this._sigma_sqrd = 0.3*0.3;
+    this._variance = 0.3*0.3;
     this._dirtyNodes = true;
-    this._init(control);
+    control.length && this._init(control);
+  }
+
+  // TODO kind of redundant ...
+  _reset (control, offset) {
+    this._offset = offset;
+    this._dirtyNodes = true;
+    this._weights = [];
+
+    for (let i = 0; i < this._offset/3; i++)
+      this._weights.push(1.0);
+
+    this.points.control = control;
+    this._resetControlRenderer();
+    this._resetCurveRenderer();
   }
 
   _init (control) {
-    if (!control.length)
-      return;
-
     this._appendToControlRenderer(control);
-    for (let i = 0; i < this._controlOffset/3; i++)
+    for (let i = 0; i < this._offset/3; i++)
       this._weights.push(1.0);
     this._resetCurveRenderer();
   }
 
-  set sigma (sig) {
-    sig = +sig;
-    this._sigma_sqrd = sig*sig;
+  set variance (vari) {
+    this._variance = vari;
     this._resetCurveRenderer();
   }
 
   _updateNodes () {
-    let n = this._controlOffset/3;
+    let n = this._offset/3;
     this._nodes = [];
 
     for (let i = 0; i < n; i++)
@@ -45,7 +55,7 @@ export default class RaGs extends Curve {
   }
 
   _calculate () {
-    let n = this._controlOffset/3;
+    let n = this._offset/3;
     let u = 0.0;
 
     if (this._dirtyNodes)
@@ -74,7 +84,7 @@ export default class RaGs extends Curve {
     let G_i_u = this.G(i,u);
     let denominator = 0.0;
 
-    for (let j = 0; j < this._controlOffset/3; j++)
+    for (let j = 0; j < this._offset/3; j++)
       denominator += this._weights[j]*this.G(j,u);
 
     return W*G_i_u/denominator;
@@ -82,7 +92,7 @@ export default class RaGs extends Curve {
 
   G (i, u) {
     return Math.exp(-((u-this._nodes[i])*(u-this._nodes[i]))/
-                      (this._sigma_sqrd));
+                      (this._variance));
   }
 
 };

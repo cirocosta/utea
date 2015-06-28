@@ -15,6 +15,7 @@ import Line from "utea/geometries/Line";
 let pb = new PaintBoard(document.querySelector('canvas'));
 let camera = new OrthographicCamera();
 let renderer = new Renderer(camera);
+let curve;
 
 camera.position = [0.0, 0.0, 1.0];
 pb.camera = camera;
@@ -47,11 +48,13 @@ let rags = new RaGs(pb._gl, camera, [
 ]);
 
 let nurbs = new NURBS(pb._gl, camera, new Float32Array([
-   0.5, 0.0, 0.0,
+  -0.5, 0.0, 0.0,
    0.0, 0.5, 0.0,
    0.5, 0.5, 0.0,
    0.5, 0.0, 0.0,
 ]));
+
+curve = nurbs;
 
 // TODO implement unproject inside camera base
 const unproject = (evt, pt) => {
@@ -103,29 +106,40 @@ ELEMS.bMode.addEventListener('click', (evt) => {
 });
 
 ELEMS.curveType.addEventListener('change', (evt) => {
+  let tmpPoints = curve.points.control;
+  let tmpOffset = curve._offset;
+
   switch (evt.target.value) {
     case "rag":
     ELEMS.widgetDegree.hidden = true;
     ELEMS.widgetVariance.hidden = false;
+    curve = rags;
     break;
 
     case "nurbs":
     ELEMS.widgetDegree.hidden = false;
     ELEMS.widgetVariance.hidden = true;
+    curve = nurbs;
     break;
 
     default:
       throw new Error("Unrecognized curve type selected.");
   }
+
+  curve.setControlPoints(tmpPoints, tmpOffset);
+  draw();
 });
 
 ELEMS.widgetVarianceRange.addEventListener('input', (evt) => {
   ELEMS.widgetVarianceValue.textContent = evt.target.value;
+  rags.variance = +evt.target.value;
+
+  draw();
 });
 
 ELEMS.widgetDegreeRange.addEventListener('input', (evt) => {
   ELEMS.widgetDegreeValue.textContent = evt.target.value;
-  nurbs.degree = evt.target.value;
+  nurbs.degree = +evt.target.value;
 
   draw();
 });
@@ -143,15 +157,14 @@ pb.bindControls({
     unproject(evt, g_point);
 
     if (!g_editMode) { // in insert mode
-      rags.addControlPoint(g_point);
-      ELEMS.widgetDegreeRange.max = rags.controlPointsNumber;
-      console.log(rags.controlPointsNumber);
+      curve.addControlPoint(g_point);
+      ELEMS.widgetDegreeRange.max = curve._offset/3;
       draw();
 
       return;
     }
 
-    g_selectedCp = rags.intersectsControlPoint(g_point);
+    g_selectedCp = curve.intersectsControlPoint(g_point);
   },
 
   onMouseMove: (evt) => {
@@ -162,7 +175,7 @@ pb.bindControls({
       return;
 
     unproject(evt, g_point);
-    rags.updateControlPoint(g_selectedCp, g_point);
+    curve.updateControlPoint(g_selectedCp, g_point);
 
     if (~g_selectedCp)
       draw();
@@ -176,7 +189,7 @@ pb.bindControls({
       return;
 
     unproject(evt, g_point);
-    rags.updateControlPoint(g_selectedCp, g_point);
+    curve.updateControlPoint(g_selectedCp, g_point);
     g_selectedCp = -1;
 
     draw();
@@ -189,9 +202,7 @@ renderer.submit(grid, xAxis, yAxis);
 function draw() {
   pb.update();
   renderer.flush();
-  rags.render();
-  nurbs.render();
-  // curve.render();
+  curve.render();
 };
 
 window.addEventListener('resize', draw);
