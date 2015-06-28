@@ -37,9 +37,10 @@ export default class DynamicBuffer extends Buffer {
    * @param {number} newSize
    */
   _realloc (newSize) {
-    this._maxSize = CHUNK_SIZE;
-    while (this._maxSize < newSize)
+    this._maxSize = 0;
+    while (this._maxSize < newSize) {
       this._maxSize += CHUNK_SIZE;
+    }
 
     let d = new Float32Array(this._maxSize);
     d.set(this._data, 0);
@@ -80,6 +81,8 @@ export default class DynamicBuffer extends Buffer {
   }
 
   /**
+   * Resets all of the internal buffer state
+   *
    * @param {Float32Array} data optional
    */
   reset (data) {
@@ -97,6 +100,7 @@ export default class DynamicBuffer extends Buffer {
     }
 
     this._data = data;
+    this._maxSize = data.length;
     this._gl.bufferData(this._target, data, this._gl.DYNAMIC_DRAW);
   }
 

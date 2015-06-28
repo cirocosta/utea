@@ -1,30 +1,54 @@
-import {vec3} from "gl-matrix";
-
-import BatchRenderer from "utea/renderers/BatchRenderer";
-import BasicMaterial from "utea/materials/BasicMaterial";
 import Curve from "utea/utils/curves/Curve";
 
 export default class NURBS extends Curve {
-  constructor (gl, camera, control=[], iterations=20, iep=true) {
+  constructor (gl, camera, control=[], iterations=20, iep=false) {
     super(gl, camera, control, iterations);
-    this._interpolateEndPoints = iep;
-    // TODO fix
-    this._weights = [1/2, 1, 1/2, 1, 1/2];
-    // TODO fix
-    this._degree = 3;
-    this._knots = [];
-    this._dirtyKnots = true;
 
-    // must be called by the subclass
-    if (control.length) {
-      this._appendToControlRenderer(control);
-      this._resetCurveRenderer();
-    }
+    this._interpolateEndPoints = iep;
+    this._weights = [];
+    this._knots = [];
+    this._degree = 0;
+    this._dirtyKnots = true;
+    control.length && this._init(control);
+  }
+
+  // TODO kind of redundant ...
+  _reset (control, offset) {
+    let n = offset/3;
+    this._offset = offset;
+    this._dirtyKnots = true;
+    this._weights = [];
+
+    for (let i = 0; i < this._offset/3; i++)
+      this._weights.push(1.0);
+
+    if (n > 3)
+      this._degree = 3;
+    else
+      this._degree = n - 1;
+
+    this.points.control = control;
+    this._resetControlRenderer();
+    this._resetCurveRenderer();
+  }
+
+  _init (control) {
+    this._appendToControlRenderer(control);
+    let n = this._offset/3;
+
+    if (n > 3)
+      this._degree = 3;
+    else
+      this._degree = n - 1;
+
+    for (let i = 0; i < n; i++)
+      this._weights.push(1.0);
+    this._resetCurveRenderer();
   }
 
   set degree (deg) {
     this._dirtyKnots = true;
-    this._degree = +deg;
+    this._degree = deg;
     this._resetCurveRenderer();
   }
 
@@ -58,7 +82,7 @@ export default class NURBS extends Curve {
   }
 
   _calculate () {
-    let n = this._controlOffset/3;
+    let n = this._offset/3;
     let k = this._degree;
 
     this._tempPoint[0] = 0.0;
@@ -76,14 +100,14 @@ export default class NURBS extends Curve {
       let denominator = 0;
 
       for (let i=0; i < n; i++) {
-        let weight = this._getWeight(i+1, k, n, t);
+        let blend = this._getWeight(i+1, k, n, t);
 
         this._tempPoint[0] +=
-          this._weights[i] * this.points.control[i*3 ]*weight;
+          this._weights[i] * this.points.control[ i*3 ]*blend;
         this._tempPoint[1] +=
-          this._weights[i] * this.points.control[i*3+1]*weight;
+          this._weights[i] * this.points.control[i*3+1]*blend;
 
-        denominator += this._weights[i] * weight;
+        denominator += this._weights[i] * blend;
       }
 
       this._tempPoint[0] /= denominator;

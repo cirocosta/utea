@@ -2,6 +2,7 @@ import {vec3} from "gl-matrix";
 
 import PaintBoard from "utea/PaintBoard";
 import NURBS from "utea/utils/curves/NURBS";
+import RaGs from "utea/utils/curves/RaGs";
 import Renderer from "utea/renderers/Renderer";
 import BatchRenderer from "utea/renderers/BatchRenderer";
 import OrthographicCamera from "utea/cameras/OrthographicCamera";
@@ -14,6 +15,7 @@ import Line from "utea/geometries/Line";
 let pb = new PaintBoard(document.querySelector('canvas'));
 let camera = new OrthographicCamera();
 let renderer = new Renderer(camera);
+let curve;
 
 camera.position = [0.0, 0.0, 1.0];
 pb.camera = camera;
@@ -38,14 +40,23 @@ let yAxis = new Renderable(pb._gl, {
   drawMode: 'LINES',
 });
 
-let curve = new NURBS(pb._gl, camera, new Float32Array([
-  -0.5,  0.0, 0.0,
-   0.0,  0.5, 0.0,
-   0.5,  0.0, 0.0,
-   0.0, -0.5, 0.0,
-  -0.5,  0.0, 0.0,
+let rags = new RaGs(pb._gl, camera, [
+  -0.5, 0.0, 0.0,
+   0.0, 0.5, 0.0,
+   0.5, 0.5, 0.0,
+   0.5, 0.0, 0.0,
+]);
+
+let nurbs = new NURBS(pb._gl, camera, new Float32Array([
+  -0.5, 0.0, 0.0,
+   0.0, 0.5, 0.0,
+   0.5, 0.5, 0.0,
+   0.5, 0.0, 0.0,
 ]));
 
+curve = nurbs;
+
+// TODO implement unproject inside camera base
 const unproject = (evt, pt) => {
   vec3.copy(pt, [
     2*evt.clientX/pb.width - 1,
@@ -95,29 +106,40 @@ ELEMS.bMode.addEventListener('click', (evt) => {
 });
 
 ELEMS.curveType.addEventListener('change', (evt) => {
+  let tmpPoints = curve.points.control;
+  let tmpOffset = curve._offset;
+
   switch (evt.target.value) {
     case "rag":
     ELEMS.widgetDegree.hidden = true;
     ELEMS.widgetVariance.hidden = false;
+    curve = rags;
     break;
 
     case "nurbs":
     ELEMS.widgetDegree.hidden = false;
     ELEMS.widgetVariance.hidden = true;
+    curve = nurbs;
     break;
 
     default:
       throw new Error("Unrecognized curve type selected.");
   }
+
+  curve.setControlPoints(tmpPoints, tmpOffset);
+  draw();
 });
 
 ELEMS.widgetVarianceRange.addEventListener('input', (evt) => {
   ELEMS.widgetVarianceValue.textContent = evt.target.value;
+  rags.variance = +evt.target.value;
+
+  draw();
 });
 
 ELEMS.widgetDegreeRange.addEventListener('input', (evt) => {
   ELEMS.widgetDegreeValue.textContent = evt.target.value;
-  curve.degree = evt.target.value;
+  nurbs.degree = +evt.target.value;
 
   draw();
 });
@@ -136,8 +158,7 @@ pb.bindControls({
 
     if (!g_editMode) { // in insert mode
       curve.addControlPoint(g_point);
-      ELEMS.widgetDegreeRange.max = curve.controlPointsNumber;
-      console.log(curve.controlPointsNumber);
+      ELEMS.widgetDegreeRange.max = curve._offset/3;
       draw();
 
       return;
@@ -176,6 +197,7 @@ pb.bindControls({
 });
 
 renderer.submit(grid, xAxis, yAxis);
+
 
 function draw() {
   pb.update();

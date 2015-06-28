@@ -29,9 +29,12 @@ export default class Curve {
 
     this._iterations = iterations;
     this._tempPoint = vec3.create();
-    this._controlOffset = 0.0;
+    this._offset = 0.0;
   }
 
+  setControlPoints (controlPoints, offset) {
+    this._reset(controlPoints, offset);
+  }
 
   // invalidates: - curve
   set iterations (iterations) {
@@ -40,28 +43,9 @@ export default class Curve {
     this._resetCurveRenderer();
   }
 
-  get controlPointsNumber () {
-    return this._controlOffset/3;
-  }
-
   render () {
     this.renderers.curve.flush();
     this.renderers.control.flush();
-  }
-
-  // TODO NURBS will override this
-  //      Adding a control point, in the case of
-  //      a NURBS invalidates:
-  //        - weights
-  //        - knots configuration
-  //        - curve
-  //        - control
-  addControlPoint (point) {
-    this.points.control.set(point, this._controlOffset);
-    this._controlOffset += point.length;
-    this.renderers.control.submit({coords: point});
-
-    this._resetCurveRenderer();
   }
 
   // invalidates: - curve
@@ -76,7 +60,7 @@ export default class Curve {
     let dist = 0.0;
     let x = 0.0, y = 0.0, z = 0.0;
 
-    for (let i = 0; i < this._controlOffset; i+=3) {
+    for (let i = 0; i < this._offset; i+=3) {
       x = p[0] - this.points.control[ i ];
       y = p[1] - this.points.control[i+1];
       z = p[2] - this.points.control[i+2];
@@ -95,9 +79,15 @@ export default class Curve {
     this.renderers.curve.reset({coords: this.points.curve});
   }
 
+  _resetControlRenderer () {
+    this.renderers.control.reset({
+      coords: this.points.control.subarray(0, this._offset)
+    });
+  }
+
   _appendToControlRenderer (points) {
-    this.points.control.set(points, this._controlOffset);
-    this._controlOffset += points.length;
+    this.points.control.set(points, this._offset);
+    this._offset += points.length;
     this.renderers.control.submit({coords: points});
   }
 };
