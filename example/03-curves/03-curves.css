@@ -1,5 +1,6 @@
 body {
   font-family: helvetica;
+  background-color: black;
 }
 
 #selections {
@@ -20,3 +21,13 @@ select {
   border: none;
 }
 
+#canvas-open,
+#canvas-closed {
+  height: 50%;
+  width: 50%;
+}
+
+#canvas-3d {
+  float: right;
+  width: 50%;
+}
