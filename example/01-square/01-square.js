@@ -9,7 +9,7 @@ let pb = new PaintBoard(document.querySelector("canvas"));
 let camera = new OrthographicCamera();
 let renderer = new Renderer(camera);
 let renderable = new Renderable(pb._gl, {
-  geometry: new Square(pb._gl),
+  geometry: new Square(),
   material: new BasicMaterial(pb._gl, [1.0, 0.0, 0.0]),
   drawMode: 'LINE_STRIP'
 });

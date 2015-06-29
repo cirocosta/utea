@@ -1,9 +1,15 @@
+import Renderable from "./Renderable.js";
+import BasicMaterial from "utea/materials/BasicMaterial";
+
 if (__DEV__)
   var {createDebugContext} = require("./utils/debug.js");
 
 export default class PaintBoard {
-  constructor (canvas) {
-    this._gl;
+  get Renderable () { return Renderable.bind(null, this._gl); }
+  get BasicMaterial () { return BasicMaterial.bind(null, this._gl); }
+
+  constructor (canvas, opts={}) {
+    this._gl = {};
     this._canvas = canvas;
     this._camera;
 
@@ -12,7 +18,11 @@ export default class PaintBoard {
 
     this._create3DContext();
     this._gl.enable(this._gl.DEPTH_TEST);
-    this._gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    if (opts.clearColor)
+      this._gl.clearColor(...opts.clearColor);
+    else
+      this._gl.clearColor(0.0, 0.0, 0.0, 1.0);
   }
 
   get width () { return this._canvas.width; }

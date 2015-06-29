@@ -16,9 +16,9 @@ export default class Square {
       0.0, 0.0, 1.0,
     ]);
 
-    this.ibo = new IndexBuffer(gl, new Uint16Array([
+    this.indices = new Uint16Array([
       0, 1, 2,
       2, 3, 0
-    ]));
+    ]);
   }
 };
