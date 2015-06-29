@@ -30,7 +30,7 @@ camera.position = [0.0, 0.0, 1.0];
 pbOpen.camera = camera;
 
 let grid = new Renderable(pbOpen._gl, {
-  geometry: new PlaneGrid(pbOpen._gl, 25.0),
+  geometry: new PlaneGrid(25.0),
   material: new BasicMaterial(pbOpen._gl, [0.3, 0.3, 0.3]),
   drawMode: 'LINES'
 });
@@ -38,13 +38,13 @@ grid.position = [0.0, 0.0, -1.0];
 grid.scale = [.1, .1, .1];
 
 let xAxis = new Renderable(pbOpen._gl, {
-  geometry: new Line(pbOpen._gl, [-1.0, 0.0, 0.0], [1.0, 0.0, 0.2]),
+  geometry: new Line([-1.0, 0.0, 0.0], [1.0, 0.0, 0.2]),
   material: new BasicMaterial(pbOpen._gl, [1.0, 0.0, 0.0]),
   drawMode: 'LINES',
 });
 
 let yAxis = new Renderable(pbOpen._gl, {
-  geometry: new Line(pbOpen._gl, [0.0, -1.0, 0.0], [0.0, 1.0, 0.2]),
+  geometry: new Line([0.0, -1.0, 0.0], [0.0, 1.0, 0.2]),
   material: new BasicMaterial(pbOpen._gl, [0.0, 1.0, 0.0]),
   drawMode: 'LINES',
 });

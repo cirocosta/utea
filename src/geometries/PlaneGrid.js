@@ -7,9 +7,8 @@ import IndexBuffer from "../buffers/IndexBuffer.js";
  *  ==> 8m + 4 (there are 4 repetitions)
  */
 export default class PlaneGrid {
-  constructor (gl, mult=2.0) {
+  constructor (mult=2.0) {
     const N = 8*mult + 4;
-    this._gl = gl;
     this.coords = new Float32Array(N*3);
     this.indices = new Uint16Array(N);
 
@@ -40,7 +39,6 @@ export default class PlaneGrid {
       c += 12;
     }
 
-    this.ibo = new IndexBuffer(gl, this.indices);
   }
 
 };

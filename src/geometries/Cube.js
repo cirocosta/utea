@@ -1,7 +1,7 @@
 import IndexBuffer from "../buffers/IndexBuffer.js";
 
 export default class Cube {
-  constructor (gl, w=1, h=1, d=1, normals=true) {
+  constructor (w=1, h=1, d=1, normals=true) {
     /**
      * If we want to achieve per-face control of
      * colors, we need to forget total sharing of
@@ -30,13 +30,13 @@ export default class Cube {
     ]);
 
     // public stuff
-    this.ibo = new IndexBuffer(gl, new Uint16Array([
+    this.indices = new Uint16Array([
        0, 1, 2,   0, 2, 3,    // front
        4, 5, 6,   4, 6, 7,    // right
        8, 9,10,   8,10,11,    // up
       12,13,14,  12,14,15,    // left
       16,17,18,  16,18,19,    // down
       20,21,22,  20,22,23     // back
-    ]));
+    ]);
   }
 };

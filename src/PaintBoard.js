@@ -3,7 +3,7 @@ if (__DEV__)
 
 export default class PaintBoard {
   constructor (canvas, opts={}) {
-    this._gl;
+    this._gl = {};
     this._canvas = canvas;
     this._camera;
 

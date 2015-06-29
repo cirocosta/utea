@@ -1,14 +1,17 @@
 import Body from "./Body.js";
 import VertexBuffer from "utea/buffers/VertexBuffer";
+import IndexBuffer from "utea/buffers/IndexBuffer";
 
 export default class Renderable extends Body {
   /**
    * @param WebGLContext gl
-   * @param Object props {
-   *                        material,
-   *                        geometry,
-   *                        [drawMode]
-   *                     }
+   * @param Object props
+   *
+   * props : {
+   *   material,
+   *   geometry: {coords, indices}
+   *   [drawMode]
+   * }
    */
   constructor (gl, props) {
     super();
@@ -17,6 +20,7 @@ export default class Renderable extends Body {
     this._ibo = props.geometry.ibo;
     this._shader = props.material.shader;
     this._material = props.material;
+
     // TODO make it an array like in batchrenderer
     this._drawMode = props.drawMode ? gl[props.drawMode] : gl.TRIANGLES;
 
@@ -24,6 +28,8 @@ export default class Renderable extends Body {
       this._shader.prepare(props.geometry),
       this._shader._STRIDE
     );
+
+    this._ibo = new IndexBuffer(gl, props.geometry.indices);
   }
 
   draw (camera) {
