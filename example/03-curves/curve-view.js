@@ -15,15 +15,30 @@ import PerspectiveCamera from "utea/cameras/PerspectiveCamera";
 import BatchRenderer from "utea/renderers/BatchRenderer";
 
 class DynamicSurface {
-  constructor (gl, data) {
+  constructor (gl, open, closed) {
     this._renderer = new BatchRenderer(gl, new BasicMaterial(gl,
       [0.0, 0.5, 0.0], 3.0));
-
-    this._renderer.submit({coords: data});
+    this._surface = new Float32Array(closed.length * (open.length/3));
+    this._computeSurface(open, closed);
+    this._renderer.submit({coords: this._surface});
   }
 
-  resetData (data) {
-    this._renderer.reset({coords: data});
+  _computeSurface (open, closed) {
+    let k = 0;
+
+    for (let i = 0; i < open.length; i += 3) {
+      for (let j = 0; j < closed.length; j += 3) {
+        this._surface[k] = open[i];
+        this._surface[k+1] = open[i+1] + closed[j+1];
+        this._surface[k+2] = closed[j];
+        k += 3;
+      }
+    }
+  }
+
+  reset (open, closed) {
+    this._computeSurface(open, closed);
+    this._renderer.reset({coords: this._surface});
   }
 
   render (camera) {
@@ -57,12 +72,12 @@ let grid = new Renderable(pb._gl, {
   drawMode: 'LINES',
 });
 
-let curve = Store.curves.closed.current.points.curve;
-let n = curve.length;
-let surface = new DynamicSurface(pb._gl, curve);
+let open = Store.curves.open.current.points.curve;
+let closed = Store.curves.closed.current.points.curve;
+let surface = new DynamicSurface(pb._gl, open, closed);
 
 Store.curves.listeners.push(() => {
-  surface.resetData(curve);
+  surface.reset(open, closed);
 });
 
 cube.scale = [0.2, 0.2, 0.2];
