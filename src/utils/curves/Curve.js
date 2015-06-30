@@ -8,6 +8,8 @@ import BasicMaterial from "utea/materials/BasicMaterial";
  */
 export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
+    this._camera = camera;
+
     // contract
     if (this.constructor == Curve)
       throw new TypeError("Curve can't be instantiated directly.");
@@ -21,9 +23,9 @@ export default class Curve {
     };
 
     this.renderers = {
-      control: new BatchRenderer(gl, camera, new BasicMaterial(gl,
+      control: new BatchRenderer(gl, new BasicMaterial(gl,
         [0.5, 0.5, 0.0], 5.0)),
-      curve: new BatchRenderer(gl, camera, new BasicMaterial(gl,
+      curve: new BatchRenderer(gl, new BasicMaterial(gl,
         [1.0, 1.0, 1.0], 1.0)),
     };
 
@@ -44,8 +46,8 @@ export default class Curve {
   }
 
   render () {
-    this.renderers.curve.flush();
-    this.renderers.control.flush();
+    this.renderers.curve.flush(this._camera);
+    this.renderers.control.flush(this._camera);
   }
 
   // invalidates: - curve

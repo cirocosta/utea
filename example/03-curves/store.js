@@ -12,6 +12,7 @@ let curves = {
     edit: true,
   },
   view: null,
+  listeners: [],
 };
 
 let Store = {

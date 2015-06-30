@@ -85,6 +85,7 @@ pb.bindControls({
 
     camera.unproject(evt, g_point);
     Store.curves.closed.current.updateControlPoint(g_selectedCp, g_point);
+    Store.curves.listeners.length && Store.curves.listeners[0]();
 
     if (~g_selectedCp)
       draw();

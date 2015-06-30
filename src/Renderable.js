@@ -17,7 +17,6 @@ export default class Renderable extends Body {
     super();
 
     this._gl = gl;
-    this._ibo = props.geometry.ibo;
     this._shader = props.material.shader;
     this._material = props.material;
 
