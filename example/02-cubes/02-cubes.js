@@ -1,5 +1,5 @@
 import {mat4, vec3} from "gl-matrix";
-import Arcball from "utea/utils/Arcball";
+import Arcball from "utea/utils/controls/Arcball";
 import PaintBoard from "utea/PaintBoard";
 import Renderable from "utea/Renderable";
 import Line from "utea/geometries/Line";

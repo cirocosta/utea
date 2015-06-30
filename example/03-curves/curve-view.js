@@ -1,6 +1,7 @@
 import {mat4, vec3} from "gl-matrix";
 
-import Arcball from "utea/utils/Arcball";
+import Pan from "utea/utils/controls/Pan";
+import Arcball from "utea/utils/controls/Arcball";
 import PaintBoard from "utea/PaintBoard";
 import Renderable from "utea/Renderable";
 import Line from "utea/geometries/Line";
@@ -13,6 +14,7 @@ import Renderer from "utea/renderers/Renderer";
 import PerspectiveCamera from "utea/cameras/PerspectiveCamera";
 
 let pb = new PaintBoard(document.querySelector("#canvas-3d"));
+let pan = new Pan(0.01);
 
 let camera = new PerspectiveCamera();
 let renderer = new Renderer(camera);
@@ -58,34 +60,29 @@ pb.bindControls({
     if (!evt.button) {
       return arcball.start(evt);
     }
+
+    pan.start(evt.offsetX, evt.offsetY);
   },
 
   onMouseMove: (evt) => {
-    if (!evt.buttons || evt.button == 2)
+    if (!evt.buttons)
       return;
 
-    arcball.move(evt);
-    cube.rotation = arcball.rotation;
+    if (!evt.button) { // mouse-left
+      arcball.move(evt);
+      cube.rotation = arcball.rotation;
+
+      return;
+    }
+
+    pan.move(evt.offsetX, evt.offsetY);
+    camera.incrementPosition(pan._delta[0], pan._delta[1]);
   },
 });
 
 (function loop () {
   window.requestAnimationFrame(loop);
   pb.update();
-
-  // prepare pan through right mouse
-  // if (pb.isKeyActive(65))
-  //   camera.incrementPosition(0.05);
-
-  // if (pb.isKeyActive(68))
-  //   camera.incrementPosition(-0.05);
-
-  // if (pb.isKeyActive(87))
-  //   camera.incrementPosition(0.0, 0.0, 0.05);
-
-  // if (pb.isKeyActive(83))
-  //   camera.incrementPosition(0.0, 0.0, -0.05);
-
   renderer.flush();
 })();
 
