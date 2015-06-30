@@ -35,8 +35,8 @@ export default class Arcball {
   }
 
   _toSphere (out, evt) {
-    out[0] = 2*evt.clientX/this._camera._width - 1;
-    out[1] = 1 - 2*evt.clientY/this._camera._height;
+    out[0] = 2*evt.offsetX/this._camera._width - 1;
+    out[1] = 1 - 2*evt.offsetY/this._camera._height;
 
     let length_squared = out[0]*out[0] + out[1]*out[1];
     let radius_squared = this.radius * this.radius;

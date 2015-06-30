@@ -3,7 +3,8 @@ body {
   background-color: black;
 }
 
-#selections {
+.selections {
+  position: absolute;
   text-align: center;
   background-color: rgba(47, 79, 79, 0.8);
   color: white;
