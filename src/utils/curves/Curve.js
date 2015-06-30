@@ -9,6 +9,9 @@ import BasicMaterial from "utea/materials/BasicMaterial";
 export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
     this._camera = camera;
+    this._curveLength = iterations*3 + 3;
+    // this._tangents = new Float32Array(this._curveLength);
+    this._tangents = [];
 
     // contract
     if (this.constructor == Curve)
@@ -19,7 +22,7 @@ export default class Curve {
     // init
     this.points = {
       control: new Float32Array(60),
-      curve: new Float32Array(iterations*3 + 3)
+      curve: new Float32Array(this._curveLength)
     };
 
     this.renderers = {
@@ -74,6 +77,43 @@ export default class Curve {
     }
 
     return -1;
+  }
+
+  /**
+   * Calculates the tangents of a given curve
+   * without considering the derivatives of
+   * it. It just calculates as a post-curve-gen.
+   *
+   * tangents.length = n_vertices * 2 - 2
+   */
+  _calculateTangents () {
+    let n = this.points.curve.length;
+    let cx = 0.0, cy = 0.0, lx = 0.0, ly = 0.0;
+    let slope = 0.0;
+
+    lx = this.points.curve[0];
+    ly = this.points.curve[1];
+
+    // first segment
+    slope = (this.points.curve[4] - ly) / (this.points.curve[3] - lx);
+    this._tangents.push(slope);
+
+    // middle segments
+    for (var i = 3; i < n-3; i += 3) {
+      this._tangents.push(slope);
+
+      cx = this.points.curve[i];
+      cy = this.points.curve[i+1];
+      slope = (cy - ly)/(cx-lx);
+      lx = cx;
+      ly = cy;
+
+      this._tangents.push(slope);
+    }
+
+    // last segment
+    slope = (this.points.curve[i+1] - ly) / (this.points.curve[i] - lx);
+    this._tangents.push(slope);
   }
 
   _resetCurveRenderer () {
