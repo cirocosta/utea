@@ -7,7 +7,7 @@ export default class Line {
       p1[0], p1[1], p1[2],
     ]);
 
-    this.indices= new Uint16Array([0, 1]);
+    this.indices = new Uint16Array([0, 1]);
   }
 
 };

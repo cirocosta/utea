@@ -46,6 +46,12 @@ let closed = Store.curves.closed.current.points.curve;
 Store.curves.open.current._calculateSlopes();
 let surface = new DynamicSurface(pb._gl, open, closed);
 
+let surfaceNormals = new Renderable(pb._gl, {
+  material: new BasicMaterial(pb._gl, [1.0, 1.0, 1.0]),
+  geometry: {coords: surface._normals},
+  drawMode: 'POINTS'
+});
+
 Store.curves.listeners.push(() => {
   surface.reset(open, closed);
 });
@@ -55,7 +61,7 @@ grid.rotate([1.0, 0.0, 0.0], Math.PI/2);
 grid.position = [0.0, 0.0, 0.1];
 
 pb.camera = camera;
-renderer.submit(cube, grid);
+renderer.submit(cube, grid, surfaceNormals);
 
 pb.bindControls({
   keys: true,

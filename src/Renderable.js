@@ -28,7 +28,8 @@ export default class Renderable extends Body {
       this._shader._STRIDE
     );
 
-    this._ibo = new IndexBuffer(gl, props.geometry.indices);
+    props.geometry.indices &&
+      (this._ibo = new IndexBuffer(gl, props.geometry.indices));
   }
 
   draw (camera) {
@@ -38,8 +39,12 @@ export default class Renderable extends Body {
     this._shader.prepareUniforms(this, camera);
     this._shader.prepareLocations(this._buffer);
 
-    this._ibo.bind();
-    this._gl.drawElements(this._drawMode, this._ibo.count,
-                          this._gl.UNSIGNED_SHORT, 0);
+    if (this._ibo) {
+      this._ibo.bind();
+      this._gl.drawElements(this._drawMode, this._ibo.count,
+                            this._gl.UNSIGNED_SHORT, 0);
+    } else {
+      this._gl.drawArrays(this._drawMode, 0, this._buffer.count);
+    }
   }
 }

@@ -45,7 +45,7 @@ let yAxis = new Renderable(pb._gl, {
 
 Store.curves.open.rags = new RaGs(pb._gl, camera, new Float32Array([
   -0.5, 0.0, 0.0,
-   0.0, 0.5, 0.0,
+   0.0, 0.0, 0.0,
    0.5, 0.0, 0.0,
 ]));
 

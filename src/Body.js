@@ -2,12 +2,12 @@ import {mat4, quat, vec3} from "gl-matrix";
 const deg_to_rad = (deg) => deg*Math.PI/180.0;
 
 export default class Body {
-  constructor (updateNormals=true) {
+  constructor (props={updateNormals:true}) {
     if (this.constructor == Body)
       throw new TypeError("Body can't be instantiated directly.");
 
     this._dirty = true;
-    this._updateNormals = updateNormals;
+    this._updateNormals = props.updateNormals;
 
     this._at = vec3.clone([0.0, 0.0, 1.0]);
     this._position = vec3.create();
