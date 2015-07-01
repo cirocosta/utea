@@ -10,8 +10,8 @@ export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
     this._camera = camera;
     this._curveLength = iterations*3 + 3;
-    // this._tangents = new Float32Array(this._curveLength);
-    this._tangents = [];
+    this._normals = new Float32Array(63);
+    this._slopes = new Float32Array(63/3);
 
     // contract
     if (this.constructor == Curve)
@@ -79,6 +79,29 @@ export default class Curve {
     return -1;
   }
 
+  _calculateSlopes () {
+    let n = this.points.curve.length;
+    let lx = this.points.curve[0], ly = this.points.curve[1];
+    let cx = this.points.curve[3], cy = this.points.curve[4];
+
+    // first segment
+    this._slopes[i/3] = Math.atan2(cy-ly, cx-lx);
+
+    // middle segments
+    for (var i = 3; i < n-3; i += 3) {
+      cx = this.points.curve[i];
+      cy = this.points.curve[i+1];
+      this._slopes[i/3] = Math.atan2(cy-ly, cx-lx);
+
+      lx = cx;
+      ly = cy;
+    }
+
+    cx = this.points.curve[i];
+    cy = this.points.curve[i+1];
+    this._slopes[i/3] = Math.atan2(cy-ly, cx-lx);
+  }
+
   /**
    * Calculates the tangents of a given curve
    * without considering the derivatives of
@@ -86,34 +109,32 @@ export default class Curve {
    *
    * tangents.length = n_vertices * 2 - 2
    */
-  _calculateTangents () {
+  _calculateNormals () {
     let n = this.points.curve.length;
-    let cx = 0.0, cy = 0.0, lx = 0.0, ly = 0.0;
-    let slope = 0.0;
-
-    lx = this.points.curve[0];
-    ly = this.points.curve[1];
+    let lx = this.points.curve[0], ly = this.points.curve[1];
+    let cx = this.points.curve[3], cy = this.points.curve[4];
+    let tmpNormal = vec3.create();
 
     // first segment
-    slope = (this.points.curve[4] - ly) / (this.points.curve[3] - lx);
-    this._tangents.push(slope);
+    vec3.cross(tmpNormal, [cx-lx, cy-ly, 0.0], [0.0, 0.0, -1.0]);
+    vec3.normalize(tmpNormal, tmpNormal);
+    this._normals.set(tmpNormal, 0);
 
     // middle segments
     for (var i = 3; i < n-3; i += 3) {
-      this._tangents.push(slope);
-
       cx = this.points.curve[i];
       cy = this.points.curve[i+1];
-      slope = (cy - ly)/(cx-lx);
+      vec3.normalize(tmpNormal, tmpNormal);
+      vec3.cross(tmpNormal, [cx-lx, cy-ly, 0.0], [0.0, 0.0, -1.0]);
       lx = cx;
       ly = cy;
 
-      this._tangents.push(slope);
+      this._normals.set(tmpNormal, i);
     }
 
-    // last segment
-    slope = (this.points.curve[i+1] - ly) / (this.points.curve[i] - lx);
-    this._tangents.push(slope);
+    vec3.cross(tmpNormal, [cx-lx, cy-ly, 0.0], [0.0, 0.0, -1.0]);
+    vec3.normalize(tmpNormal, tmpNormal);
+    this._normals.set(tmpNormal, i);
   }
 
   _resetCurveRenderer () {

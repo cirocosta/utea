@@ -21,11 +21,12 @@ export default class BatchRenderer {
    * @param {Camera} camera
    * @param {Material} material base material
    */
-  constructor (gl, material) {
+  constructor (gl, material, modes) {
     this._gl = gl;
-    this._drawModes = [gl.POINTS, gl.LINE_STRIP];
+    this._drawModes = modes || [gl.POINTS, gl.LINE_STRIP];
     this._dynVbo = new DynamicBuffer(gl, material.componentCount);
     this._shader = material.shader;
+    this._modelMatrix = mat4.create();
     this._material = material;
   }
 
@@ -68,7 +69,10 @@ export default class BatchRenderer {
     this._dynVbo.bind();
 
     this._shader.prepareLocations(this._dynVbo);
-    this._shader.prepareUniforms({modelMatrix: mat4.create()}, camera);
+    this._shader.prepareUniforms({
+      modelMatrix: this._modelMatrix,
+      normalMatrix: this._modelMatrix,
+    }, camera);
 
     for (let drawMode of this._drawModes)
       this._gl.drawArrays(drawMode, 0, this._dynVbo.count);

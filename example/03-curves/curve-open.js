@@ -49,8 +49,6 @@ Store.curves.open.rags = new RaGs(pb._gl, camera, new Float32Array([
    0.5, 0.0, 0.0,
 ]));
 
-Store.curves.open.rags._calculateTangents();
-
 Store.curves.open.nurbs = new NURBS(pb._gl, camera, new Float32Array([
   -0.5, 0.0, 0.0,
    0.0, 0.0, 0.0,
