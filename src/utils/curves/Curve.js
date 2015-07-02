@@ -10,8 +10,9 @@ export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
     this._camera = camera;
     this._curveLength = iterations*3 + 3;
-    this._normals = new Float32Array(63);
-    this._slopes = new Float32Array(63/3);
+    // TODO this will need to be resized in
+    //      run time
+    this._thetas = new Float32Array(63/3);
 
     // contract
     if (this.constructor == Curve)
@@ -85,13 +86,13 @@ export default class Curve {
     let cx = this.points.curve[3], cy = this.points.curve[4];
 
     // first segment
-    this._slopes[i/3] = Math.atan2(cy-ly, cx-lx);
+    this._thetas[i/3] = Math.atan2(cy-ly, cx-lx);
 
     // middle segments
     for (var i = 3; i < n-3; i += 3) {
       cx = this.points.curve[i];
       cy = this.points.curve[i+1];
-      this._slopes[i/3] = Math.atan2(cy-ly, cx-lx);
+      this._thetas[i/3] = Math.atan2(cy-ly, cx-lx);
 
       lx = cx;
       ly = cy;
@@ -99,42 +100,7 @@ export default class Curve {
 
     cx = this.points.curve[i];
     cy = this.points.curve[i+1];
-    this._slopes[i/3] = Math.atan2(cy-ly, cx-lx);
-  }
-
-  /**
-   * Calculates the tangents of a given curve
-   * without considering the derivatives of
-   * it. It just calculates as a post-curve-gen.
-   *
-   * tangents.length = n_vertices * 2 - 2
-   */
-  _calculateNormals () {
-    let n = this.points.curve.length;
-    let lx = this.points.curve[0], ly = this.points.curve[1];
-    let cx = this.points.curve[3], cy = this.points.curve[4];
-    let tmpNormal = vec3.create();
-
-    // first segment
-    vec3.cross(tmpNormal, [cx-lx, cy-ly, 0.0], [0.0, 0.0, -1.0]);
-    vec3.normalize(tmpNormal, tmpNormal);
-    this._normals.set(tmpNormal, 0);
-
-    // middle segments
-    for (var i = 3; i < n-3; i += 3) {
-      cx = this.points.curve[i];
-      cy = this.points.curve[i+1];
-      vec3.normalize(tmpNormal, tmpNormal);
-      vec3.cross(tmpNormal, [cx-lx, cy-ly, 0.0], [0.0, 0.0, -1.0]);
-      lx = cx;
-      ly = cy;
-
-      this._normals.set(tmpNormal, i);
-    }
-
-    vec3.cross(tmpNormal, [cx-lx, cy-ly, 0.0], [0.0, 0.0, -1.0]);
-    vec3.normalize(tmpNormal, tmpNormal);
-    this._normals.set(tmpNormal, i);
+    this._thetas[i/3] = Math.atan2(cy-ly, cx-lx);
   }
 
   _resetCurveRenderer () {

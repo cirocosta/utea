@@ -6,7 +6,6 @@ import Zoom from "utea/utils/controls/Zoom";
 import Arcball from "utea/utils/controls/Arcball";
 import PaintBoard from "utea/PaintBoard";
 import Renderable from "utea/Renderable";
-import Cube from "utea/geometries/Cube.js";
 import Points from "utea/geometries/Points.js";
 import PlaneGrid from "utea/geometries/PlaneGrid.js";
 import BasicMaterial from "utea/materials/BasicMaterial";
@@ -26,29 +25,19 @@ let arcball = new Arcball(camera, 1.0);
 camera.position = [0.0, 0.0, -arcball.radius];
 camera.at = [0.0, 0.0, 0.0];
 
-let cube = new Renderable(pb._gl, {
-  material: new NormalsMaterial(pb._gl, {
-    ambient: [1.0, 0.0, 0.0, 1.0],
-    diffuse: [1.0, 0.0, 0.0, 1.0],
-    specular: [1.0, 0.0, 0.0, 1.0],
-  }),
-  geometry: new Cube(),
-});
-
 let grid = new Renderable(pb._gl, {
   material: new BasicMaterial(pb._gl, [0.3, 0.3, 0.3]),
   geometry: new PlaneGrid(5),
   drawMode: 'LINES',
 });
 
-let open = Store.curves.open.current.points.curve;
-let closed = Store.curves.closed.current.points.curve;
-Store.curves.open.current._calculateSlopes();
-let surface = new DynamicSurface(pb._gl, open, closed);
+let open = Store.curves.open.current;
+let closed = Store.curves.closed.current;
 
+let surface = new DynamicSurface(pb._gl, open, closed);
 let surfaceNormals = new Renderable(pb._gl, {
   material: new BasicMaterial(pb._gl, [1.0, 1.0, 1.0]),
-  geometry: {coords: surface._normals},
+  geometry: {coords: surface.normals},
   drawMode: 'POINTS'
 });
 
@@ -56,12 +45,11 @@ Store.curves.listeners.push(() => {
   surface.reset(open, closed);
 });
 
-cube.scale = [0.2, 0.2, 0.2];
 grid.rotate([1.0, 0.0, 0.0], Math.PI/2);
 grid.position = [0.0, 0.0, 0.1];
 
 pb.camera = camera;
-renderer.submit(cube, grid, surfaceNormals);
+renderer.submit(grid, surfaceNormals);
 
 pb.bindControls({
   keys: true,
@@ -88,7 +76,7 @@ pb.bindControls({
 
     if (!evt.button) { // mouse-left
       arcball.move(evt);
-      cube.rotation = arcball.rotation;
+      // cube.rotation = arcball.rotation;
 
       return;
     }

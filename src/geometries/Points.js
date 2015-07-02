@@ -8,7 +8,5 @@ export default class Points {
     this.indices = new Uint16Array(
       Object.keys(points)
     );
-
-    console.log(this.indices);
   }
 };

@@ -10,9 +10,10 @@ varying vec4 v_Position;
 
 void main ()
 {
-  gl_Position = u_ProjectionViewMatrix * u_ModelMatrix * a_Position;
-
   v_Position = -vec4(u_ModelMatrix * a_Position);
   v_Normal = normalize(vec4(u_NormalMatrix * a_Normal));
+
+  gl_Position = u_ProjectionViewMatrix * u_ModelMatrix * a_Position;
+  gl_PointSize = 4.0;
 }
 
