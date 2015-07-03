@@ -15,8 +15,23 @@ let curves = {
   listeners: [],
 };
 
+let _listeners = {
+  open: [],
+  closed: [],
+};
+
+const register = (evtName, fun) => {
+  _listeners[evtName].push(fun);
+};
+
+const notify = (evtName) => {
+  _listeners[evtName].forEach((fn) => fn.call());
+};
+
 let Store = {
   curves,
+  register,
+  notify,
 };
 
 export default Store;

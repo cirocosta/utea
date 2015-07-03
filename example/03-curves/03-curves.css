@@ -3,6 +3,10 @@ body {
   background-color: black;
 }
 
+.hidden {
+  display: none;
+}
+
 .selections {
   position: absolute;
   text-align: center;

@@ -33,23 +33,16 @@ let grid = new Renderable(pb._gl, {
 
 let open = Store.curves.open.current;
 let closed = Store.curves.closed.current;
-
 let surface = new DynamicSurface(pb._gl, open, closed);
-let surfaceNormals = new Renderable(pb._gl, {
-  material: new BasicMaterial(pb._gl, [1.0, 1.0, 1.0]),
-  geometry: {coords: surface.normals},
-  drawMode: 'POINTS'
-});
 
-Store.curves.listeners.push(() => {
-  surface.reset(open, closed);
-});
+Store.register('open', () => { surface.reset(open, closed); });
+Store.register('closed', () => { surface.reset(open, closed); });
 
 grid.rotate([1.0, 0.0, 0.0], Math.PI/2);
 grid.position = [0.0, 0.0, 0.1];
 
 pb.camera = camera;
-renderer.submit(grid, surfaceNormals);
+renderer.submit(grid);
 
 pb.bindControls({
   keys: true,

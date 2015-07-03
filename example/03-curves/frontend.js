@@ -2,89 +2,97 @@ import {vec3} from "gl-matrix";
 import Store from "./store.js";
 
 let g_editMode = 0x1;
-
-// this should be a camera thing
-const unproject = (evt, pt, cam) => {
-  vec3.copy(pt, [
-    2*evt.clientX/pb.width - 1,
-    1 - 2*evt.clientY/pb.height,
-    0.0
-  ]);
-
-  vec3.transformMat4(pt, pt, cam.inverseProjectionViewMatrix);
-  pt[2] = 0.0;
-};
+const CURVE_TYPES = ['open', 'closed'];
 
 const ELEMS = {
-  bMode: document.querySelector("#b-mode"),
-  bClear: document.querySelector("b-clear"),
-  curveType: document.querySelector("#curve-type"),
+  open: {
+    bMode: document.querySelector(".widget-open.b-mode"),
+    bClear: document.querySelector(".widget-open.b-clear"),
+    curveType: document.querySelector(".widget-open.curve-type"),
 
-  widgetIterationsValue: document.querySelector(".widget.iterations span"),
-  widgetIterationsRange: document.querySelector(".widget.iterations input"),
+    iterationsValue: document.querySelector(".widget-open.iterations span"),
+    iterationsRange: document.querySelector(".widget-open.iterations input"),
 
-  widgetDegree: document.querySelector(".widget.degree"),
-  widgetDegreeRange: document.querySelector(".widget.degree input"),
-  widgetDegreeValue: document.querySelector(".widget.degree span"),
+    degree: document.querySelector(".widget-open.degree"),
+    degreeRange: document.querySelector(".widget-open.degree input"),
+    degreeValue: document.querySelector(".widget-open.degree span"),
 
-  widgetVariance: document.querySelector(".widget.variance"),
-  widgetVarianceRange: document.querySelector(".widget.variance input"),
-  widgetVarianceValue: document.querySelector(".widget.variance span"),
+    variance: document.querySelector(".widget-open.variance"),
+    varianceRange: document.querySelector(".widget-open.variance input"),
+    varianceValue: document.querySelector(".widget-open.variance span"),
+  },
+
+  closed: {
+    bMode: document.querySelector(".widget-closed.b-mode"),
+    bClear: document.querySelector(".widget-closed.b-clear"),
+    curveType: document.querySelector(".widget-closed.curve-type"),
+
+    iterationsValue: document.querySelector(".widget-closed.iterations span"),
+    iterationsRange: document.querySelector(".widget-closed.iterations input"),
+
+    degree: document.querySelector(".widget-closed.degree"),
+    degreeRange: document.querySelector(".widget-closed.degree input"),
+    degreeValue: document.querySelector(".widget-closed.degree span"),
+
+    variance: document.querySelector(".widget-closed.variance"),
+    varianceRange: document.querySelector(".widget-closed.variance input"),
+    varianceValue: document.querySelector(".widget-closed.variance span"),
+  },
 };
 
-ELEMS.bMode.addEventListener('click', (evt) => {
-  g_editMode ^= 0x1;
+for (let curve of CURVE_TYPES) {
 
-  if (g_editMode)
-    evt.target.textContent = "INSERT";
-  else
-    evt.target.textContent = "EDIT";
-});
+  ELEMS[curve].bMode.addEventListener('click', (evt) => {
+    if (Store.curves[curve].edit ^= 0x1)
+      evt.target.textContent = "INSERT";
+    else
+      evt.target.textContent = "EDIT";
+  });
 
-ELEMS.curveType.addEventListener('change', (evt) => {
-  let tmpPoints = curve.points.control;
-  let tmpOffset = curve._offset;
+  ELEMS[curve].curveType.addEventListener('change', (evt) => {
+    let tmpPoints = curve.points.control;
+    let tmpOffset = curve._offset;
 
-  switch (evt.target.value) {
-    case "rag":
-    ELEMS.widgetDegree.hidden = true;
-    ELEMS.widgetVariance.hidden = false;
-    Store.curves.open.current = Store.curves.open.rags;
-    break;
+    switch (evt.target.value) {
+      case "rag":
+      ELEMS[curve].degree.hidden = true;
+      ELEMS[curve].variance.hidden = false;
+      Store.curves[curve].current = Store.curves[curve].rags;
+      break;
 
-    case "nurbs":
-    ELEMS.widgetDegree.hidden = false;
-    ELEMS.widgetVariance.hidden = true;
-    Store.curves.open.current = Store.curves.open.nurbs;
-    break;
+      case "nurbs":
+      ELEMS[curve].degree.hidden = false;
+      ELEMS[curve].variance.hidden = true;
+      Store.curves[curve].current = Store.curves[curve].nurbs;
+      break;
 
-    default:
-      throw new Error("Unrecognized curve type selected.");
-  }
+      default:
+        throw new Error("Unrecognized curve type selected.");
+    }
 
-  Store.curves.open.current.setControlPoints(tmpPoints, tmpOffset);
-  // draw();
-});
+    Store.curves[curve].current.setControlPoints(tmpPoints, tmpOffset);
+    // draw();
+  });
 
-ELEMS.widgetVarianceRange.addEventListener('input', (evt) => {
-  ELEMS.widgetVarianceValue.textContent = evt.target.value;
-  Store.curves.open.rags.variance = +evt.target.value;
+  ELEMS[curve].varianceRange.addEventListener('input', (evt) => {
+    ELEMS[curve].varianceValue.textContent = evt.target.value;
+    Store.curves[curve].rags.variance = +evt.target.value;
+    // draw();
+  });
 
-  // draw();
-});
+  ELEMS[curve].degreeRange.addEventListener('input', (evt) => {
+    ELEMS[curve].degreeValue.textContent = evt.target.value;
+    Store.curves[curve].nurbs.degree = +evt.target.value;
 
-ELEMS.widgetDegreeRange.addEventListener('input', (evt) => {
-  ELEMS.widgetDegreeValue.textContent = evt.target.value;
-  nurbs.degree = +evt.target.value;
+    // draw();
+  });
 
-  // draw();
-});
+  ELEMS[curve].iterationsRange.addEventListener('input', (evt) => {
+    ELEMS[curve].iterationsValue.textContent = evt.target.value;
+    Store.curves[curve].current.iterations = evt.target.value;
 
-ELEMS.widgetIterationsRange.addEventListener('input', (evt) => {
-  ELEMS.widgetIterationsValue.textContent = evt.target.value;
-  Store.curves.open.current.iterations = evt.target.value;
-
-  // draw();
-});
+    // draw();
+  });
+}
 
 export default ELEMS;
