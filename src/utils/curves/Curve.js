@@ -8,28 +8,34 @@ import BasicMaterial from "utea/materials/BasicMaterial";
  */
 export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
-    // contract
-    if (this.constructor == Curve)
-      throw new TypeError("Curve can't be instantiated directly.");
-    if (this._calculate == undefined)
-      throw new TypeError('Curve::_calculate must be declared');
+    const length = iterations*3 + 3;
 
-    // init
+    this._camera = camera;
+    this._thetas = new Float32Array(length/3);
     this.points = {
       control: new Float32Array(60),
-      curve: new Float32Array(iterations*3 + 3)
+      curve: new Float32Array(length)
     };
-
     this.renderers = {
-      control: new BatchRenderer(gl, camera, new BasicMaterial(gl,
+      control: new BatchRenderer(gl, new BasicMaterial(gl,
         [0.5, 0.5, 0.0], 5.0)),
-      curve: new BatchRenderer(gl, camera, new BasicMaterial(gl,
+      curve: new BatchRenderer(gl, new BasicMaterial(gl,
         [1.0, 1.0, 1.0], 1.0)),
     };
 
     this._iterations = iterations;
     this._tempPoint = vec3.create();
     this._offset = 0.0;
+
+    // contract
+    if (this.constructor == Curve)
+      throw new TypeError("Curve can't be instantiated directly.");
+    if (this._calculate == undefined)
+      throw new TypeError('Curve::_calculate must be declared');
+    if (this.clear == undefined)
+      throw new TypeError('Curve::_clear must be declared');
+    if (this._reset == undefined)
+      throw new TypeError('Curve::_reset must be declared');
   }
 
   setControlPoints (controlPoints, offset) {
@@ -40,12 +46,13 @@ export default class Curve {
   set iterations (iterations) {
     this._iterations = iterations;
     this.points.curve = new Float32Array(iterations*3 + 3);
+    this._thetas = new Float32Array((iterations*3 + 3)/3);
     this._resetCurveRenderer();
   }
 
   render () {
-    this.renderers.curve.flush();
-    this.renderers.control.flush();
+    this.renderers.curve.flush(this._camera);
+    this.renderers.control.flush(this._camera);
   }
 
   // invalidates: - curve
@@ -72,6 +79,29 @@ export default class Curve {
     }
 
     return -1;
+  }
+
+  _calculateSlopes () {
+    let n = this.points.curve.length;
+    let lx = this.points.curve[0], ly = this.points.curve[1];
+    let cx = this.points.curve[3], cy = this.points.curve[4];
+
+    // first segment
+    this._thetas[i/3] = Math.atan2(cy-ly, cx-lx);
+
+    // middle segments
+    for (var i = 3; i < n-3; i += 3) {
+      cx = this.points.curve[i];
+      cy = this.points.curve[i+1];
+      this._thetas[i/3] = Math.atan2(cy-ly, cx-lx);
+
+      lx = cx;
+      ly = cy;
+    }
+
+    cx = this.points.curve[i];
+    cy = this.points.curve[i+1];
+    this._thetas[i/3] = Math.atan2(cy-ly, cx-lx);
   }
 
   _resetCurveRenderer () {

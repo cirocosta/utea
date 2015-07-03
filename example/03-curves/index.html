@@ -3,35 +3,61 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>utea</title>
+    <title>Utea - Curve Extrusion</title>
     <link rel="stylesheet" href="../common.css" type="text/css">
     <link rel="stylesheet" href="03-curves.css" type="text/css">
   </head>
   <body>
-      <div id="selections">
-        <button id="b-mode">INSERT</button>
-        <button id="b-clear">CLEAR</button>
+      <div class="selections">
+        <button class="widget-open b-mode">INSERT</button>
+        <button class="widget-open b-clear">CLEAR</button>
 
-        <select id="curve-type" name="curveType">
-          <option value="nurbs" selected>NURBS</option>
-          <option value="rag">RaG</option>
+        <select class="widget-open curve-type" name="curveType">
+          <option value="nurbs">NURBS</option>
+          <option value="rag" selected>RaG</option>
         </select>
 
-        <div class="widget iterations">
+        <div class="widget-open iterations">
           <p>Curve Iterations: <span>20</span></p>
           <input type="range" min="2" max="200" value="20"/>
         </div>
-        <div class="widget degree">
+        <div class="widget-open degree hidden">
+          <p>Polynomial Degree: <span>3</span></p>
+          <input type="range" min="1" max="3" value="2"/>
+        </div>
+        <div class="widget-open variance">
+          <p>Variance: <span>0.2</span></p>
+          <input type="range" min="0.001" max="0.5" step="0.001" value="0.2"/>
+        </div>
+      </div>
+
+      <canvas id="canvas-open"></canvas>
+
+      <div class="selections">
+        <button class="widget-closed b-mode">INSERT</button>
+        <button class="widget-closed b-clear">CLEAR</button>
+
+        <select class="widget-closed curve-type" name="curveType">
+          <option value="nurbs">NURBS</option>
+          <option value="rag" selected>RaG</option>
+        </select>
+
+        <div class="widget-closed iterations">
+          <p>Curve Iterations: <span>20</span></p>
+          <input type="range" min="2" max="200" value="20"/>
+        </div>
+        <div class="widget-closed degree hidden">
           <p>Polynomial Degree: <span>3</span></p>
           <input type="range" min="1" max="4" value="3"/>
         </div>
-        <div class="widget variance" hidden="true">
+        <div class="widget-closed variance">
           <p>Variance: <span>0.3</span></p>
           <input type="range" min="0.001" max="0.5" step="0.001" value="0.3"/>
         </div>
       </div>
 
-      <canvas id="canvas"></canvas>
+      <canvas id="canvas-3d"></canvas>
+      <canvas id="canvas-closed"></canvas>
     <script src="../../03-curves.js"></script>
   </body>
 </html>

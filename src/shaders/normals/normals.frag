@@ -8,7 +8,7 @@ uniform vec4 u_matSpec;
 
 const float shininess = 100.0;
 
-vec4 lightPosition = vec4(0.0, 0.0, -1.0, 0.0);
+vec4 lightPosition = vec4(0.0, 2.0, -3.0, 0.0);
 vec4 lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
 vec4 lightDiffuse = vec4(0.8, 0.8, 0.8, 1.0);
 vec4 lightSpecular = vec4(0.8, 0.9, 0.8, 1.0);

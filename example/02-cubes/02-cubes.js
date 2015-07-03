@@ -1,5 +1,5 @@
 import {mat4, vec3} from "gl-matrix";
-import Arcball from "utea/utils/Arcball";
+import Arcball from "utea/utils/controls/Arcball";
 import PaintBoard from "utea/PaintBoard";
 import Renderable from "utea/Renderable";
 import Line from "utea/geometries/Line";
@@ -25,23 +25,23 @@ let cube = new Renderable(pb._gl, {
     diffuse: [1.0, 0.0, 0.0, 1.0],
     specular: [1.0, 0.0, 0.0, 1.0],
   }),
-  geometry: new Cube(pb._gl),
+  geometry: new Cube(),
 });
 
 let grid = new Renderable(pb._gl, {
   material: new BasicMaterial(pb._gl, [1.0, 1.0, 1.0]),
-  geometry: new PlaneGrid(pb._gl, 5),
+  geometry: new PlaneGrid(5),
   drawMode: 'LINES',
 });
 
 let sphere = new Renderable(pb._gl, {
   material: new BasicMaterial(pb._gl, [1.0, 1.0, 1.0]),
-  geometry: new Sphere(pb._gl, arcball.radius),
+  geometry: new Sphere(arcball.radius),
   drawMode: 'POINTS',
 });
 
 let line = new Renderable(pb._gl, {
-  geometry: new Line(pb._gl, [0.0,0.0,0.0], camera.at),
+  geometry: new Line([0.0,0.0,0.0], camera.at),
   material: new BasicMaterial(pb._gl, [1.0, 0.0, 0.0]),
   drawMode: 'LINES'
 });

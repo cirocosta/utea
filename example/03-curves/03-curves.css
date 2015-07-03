@@ -1,8 +1,14 @@
 body {
   font-family: helvetica;
+  background-color: black;
 }
 
-#selections {
+.hidden {
+  display: none;
+}
+
+.selections {
+  position: absolute;
   text-align: center;
   background-color: rgba(47, 79, 79, 0.8);
   color: white;
@@ -20,3 +26,13 @@ select {
   border: none;
 }
 
+#canvas-open,
+#canvas-closed {
+  height: 50%;
+  width: 50%;
+}
+
+#canvas-3d {
+  float: right;
+  width: 50%;
+}

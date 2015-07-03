@@ -127,5 +127,17 @@ export default class Camera {
     this._dirty = true;
     this._dirtyInverse = true;
   }
+
+  // TODO fix.
+  unproject (evt, pt) {
+    vec3.copy(pt, [
+      2*evt.offsetX/this._width - 1,
+      1 - 2*evt.offsetY/this._height,
+      0.0 // !!
+    ]);
+
+    vec3.transformMat4(pt, pt, this.inverseProjectionViewMatrix);
+    pt[2] = 0.0;
+  }
 };
 

@@ -18,6 +18,7 @@ export default class NormalsMaterial {
     }
 
     this.shader = new NormalsShader(gl, matProps);
+    this.componentCount = 6;
   }
 
   prepare (geom) {
