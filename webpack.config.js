@@ -1,24 +1,13 @@
 "use strict";
 
 var webpack = require('webpack');
-
-// Env configs
 var envGlobals = {
-  __DEV__: process.env.NODE_ENV != "production",
-  __PROD__: process.env.NODE_ENV === "production"
+  __DEV__: process.env.NODE_ENV !== "production"
 };
-
-var envGlobalsPlugin = new webpack.DefinePlugin(envGlobals);
 
 // The config itself
 var webpackConfig = {
-  addVendor: function (name, path) {
-    this.resolve.alias[name] = path;
-    this.module.noParse.push(new RegExp('^' + name + '$'));
-  },
-
   entry: {
-    'utea': './src/index.js',
     '01-square': './example/01-square/01-square.js',
     '02-cubes': './example/02-cubes/02-cubes.js',
     '03-curves': './example/03-curves/03-curves.js',
@@ -26,73 +15,52 @@ var webpackConfig = {
 
   output: {
     path: __dirname + '/lib',
-    filename: "[name].js"
+    filename: "[name].js",
+    chunkFilename: "[id].chunk.js",
   },
-
-  externals: { },
 
   resolve: {
     extensions: ['', '.js'],
     root: __dirname,
     alias: {
-      utea: __dirname + "/src"
+      utea: __dirname + "/src",
+      vendor: __dirname + "/vendor",
     },
   },
 
   plugins: [
-    envGlobalsPlugin,
-    function() {
-      this.plugin("done", function(stats) {
-        stats = stats.toJson();
-        console.error(JSON.stringify({
-          assetsByChunkName: stats.assetsByChunkName
-        }));
-      });
-    },
+    new webpack.DefinePlugin(envGlobals),
+    new webpack.optimize.CommonsChunkPlugin("commons.js"),
   ],
 
   module: {
     loaders: [
       {
         test: /\.js$/,
-        loader: 'babel?stage=0',
-        exclude: /(node_modules|bower_components)/
+        loader: 'babel',
+        exclude: /(node_modules|bower_components)/,
+        query: {
+          stage: 0,
+          optional: ['runtime']
+        }
       },
       {
         test: /\.(frag|vert)$/,
         loader: 'shader-loader',
       }
     ],
-    noParse: [ ]
   },
 
   glsl: {},
-  devtool: "eval-source-map",
-  envInfo: envGlobals,
 };
 
-webpackConfig.addVendor('gl-matrix',
-                        'node_modules/gl-matrix/dist/gl-matrix-min.js');
-webpackConfig.addVendor('webgl-debug',
-                         __dirname + '/vendor/webgl-debug.js');
-
 if (envGlobals.__DEV__) {
-  webpackConfig.devServer = {
-    contentBase: "./"
-  };
-
   webpackConfig.debug = true;
 } else {
-  var productionDefinePlugin = new webpack.DefinePlugin({
-    "process.env": { NODE_ENV: JSON.stringify("production") }
-  });
-
   webpackConfig.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({output: {comments: false}}),
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    productionDefinePlugin
+    new webpack.optimize.UglifyJsPlugin({ output: {comments: false} })
   );
+  webpackConfig.plugins.push(new webpack.optimize.DedupePlugin());
 }
 
 module.exports = webpackConfig;
