@@ -43,18 +43,20 @@ let yAxis = new Renderable(pb._gl, {
   drawMode: 'LINES',
 });
 
-Store.curves.closed.rags = new RaGs(pb._gl, camera, new Float32Array([
-  -0.5, 0.0, 0.0,
-   0.0, 0.5, 0.0,
-   0.5, 0.5, 0.0,
-   0.5, 0.0, 0.0,
+const OPEN = Store.curves.closed;
+
+OPEN.rags = new RaGs(pb._gl, camera, new Float32Array([
+  -0.2, -0.2, 0.0,
+  -0.2,  0.2, 0.0,
+   0.2,  0.2, 0.0,
+   0.2, -0.2, 0.0,
 ]), {closed: true});
 
-Store.curves.closed.nurbs = new NURBS(pb._gl, camera, new Float32Array([
-  -0.5, 0.0, 0.0,
-   0.0, 0.5, 0.0,
-   0.5, 0.5, 0.0,
-   0.5, 0.0, 0.0,
+OPEN.nurbs = new NURBS(pb._gl, camera, new Float32Array([
+  -0.2, -0.2, 0.0,
+  -0.2,  0.2, 0.0,
+   0.2,  0.2, 0.0,
+   0.2, -0.2, 0.0,
 ]));
 
 let g_point = vec3.create();
@@ -65,54 +67,53 @@ pb.bindControls({
     g_point = vec3.create();
     camera.unproject(evt, g_point);
 
-    if (!Store.curves.closed.edit) { // in insert mode
-      Store.curves.closed.current.addControlPoint(g_point);
-      ELEMS.widgetDegreeRange.max = Store.curves.closed.current._offset/3;
-      draw();
+    if (!OPEN.edit) { // in insert mode
+      OPEN.current.addControlPoint(g_point);
+      ELEMS.closed.degreeRange.max = OPEN.current._offset/3;
+      Store.notify('closed');
 
       return;
     }
 
-    g_selectedCp = Store.curves.closed.current.intersectsControlPoint(g_point);
+    g_selectedCp = OPEN.current.intersectsControlPoint(g_point);
   },
 
   onMouseMove: (evt) => {
-    if (!Store.curves.closed.edit)
-      return;
-
-    if (g_selectedCp < 0)
+    if (g_selectedCp < 0 || !OPEN.edit)
       return;
 
     camera.unproject(evt, g_point);
-    Store.curves.closed.current.updateControlPoint(g_selectedCp, g_point);
-    Store.curves.listeners.length && Store.curves.listeners[0]();
+    OPEN.current.updateControlPoint(g_selectedCp, g_point);
 
     if (~g_selectedCp)
-      draw();
+      Store.notify('closed');
   },
 
   onMouseUp: (evt) => {
-    if (!Store.curves.closed.edit)
+    if (!OPEN.edit)
       return;
 
     if (g_selectedCp < 0)
       return;
 
     camera.unproject(evt, g_point);
-    Store.curves.closed.current.updateControlPoint(g_selectedCp, g_point);
+    OPEN.current.updateControlPoint(g_selectedCp, g_point);
     g_selectedCp = -1;
 
     draw();
   },
 });
 
-Store.curves.closed.current = Store.curves.closed.rags;
+Store.register('closed', draw);
+Store.register('curveSize', draw);
+
+OPEN.current = OPEN.rags;
 renderer.submit(grid, xAxis, yAxis);
 
 function draw() {
   pb.update();
   renderer.flush();
-  Store.curves.closed.current.render();
+  OPEN.current.render();
 };
 
 window.addEventListener('resize', draw);

@@ -35,6 +35,11 @@ let open = Store.curves.open.current;
 let closed = Store.curves.closed.current;
 let surface = new DynamicSurface(pb._gl, open, closed);
 
+Store.register('curvesChanged', () => {
+  open = Store.curves.open.current;
+  closed = Store.curves.closed.current;
+});
+
 Store.register('open', () => { surface.reset(open, closed); });
 Store.register('closed', () => { surface.reset(open, closed); });
 Store.register('curveSize', () => { surface.reset_size(open, closed); });

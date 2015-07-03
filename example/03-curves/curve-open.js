@@ -77,18 +77,14 @@ pb.bindControls({
   },
 
   onMouseMove: (evt) => {
-    if (g_selectedCp < 0)
-      return;
-
-    if (!OPEN.edit)
+    if (g_selectedCp < 0 || !OPEN.edit)
       return;
 
     camera.unproject(evt, g_point);
     OPEN.current.updateControlPoint(g_selectedCp, g_point);
 
-    if (~g_selectedCp) {
+    if (~g_selectedCp)
       Store.notify('open');
-    }
   },
 
   onMouseUp: (evt) => {

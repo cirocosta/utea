@@ -8,22 +8,14 @@ import BasicMaterial from "utea/materials/BasicMaterial";
  */
 export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
+    const length = iterations*3 + 3;
+
     this._camera = camera;
-    this._curveLength = iterations*3 + 3;
-    this._thetas = new Float32Array(this._curveLength/3);
-
-    // contract
-    if (this.constructor == Curve)
-      throw new TypeError("Curve can't be instantiated directly.");
-    if (this._calculate == undefined)
-      throw new TypeError('Curve::_calculate must be declared');
-
-    // init
+    this._thetas = new Float32Array(length/3);
     this.points = {
       control: new Float32Array(60),
-      curve: new Float32Array(this._curveLength)
+      curve: new Float32Array(length)
     };
-
     this.renderers = {
       control: new BatchRenderer(gl, new BasicMaterial(gl,
         [0.5, 0.5, 0.0], 5.0)),
@@ -34,6 +26,16 @@ export default class Curve {
     this._iterations = iterations;
     this._tempPoint = vec3.create();
     this._offset = 0.0;
+
+    // contract
+    if (this.constructor == Curve)
+      throw new TypeError("Curve can't be instantiated directly.");
+    if (this._calculate == undefined)
+      throw new TypeError('Curve::_calculate must be declared');
+    if (this.clear == undefined)
+      throw new TypeError('Curve::_clear must be declared');
+    if (this._reset == undefined)
+      throw new TypeError('Curve::_reset must be declared');
   }
 
   setControlPoints (controlPoints, offset) {

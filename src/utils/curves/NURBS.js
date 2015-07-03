@@ -1,7 +1,7 @@
 import Curve from "utea/utils/curves/Curve";
 
 export default class NURBS extends Curve {
-  constructor (gl, camera, control=[], iterations=20, iep=false) {
+  constructor (gl, camera, control=[], iterations=20, iep=true) {
     super(gl, camera, control, iterations);
 
     this._interpolateEndPoints = iep;
@@ -9,7 +9,16 @@ export default class NURBS extends Curve {
     this._knots = [];
     this._degree = 0;
     this._dirtyKnots = true;
+
     control.length && this._init(control);
+  }
+
+  clear () {
+    this._offset = 0.0;
+    this.points.curve = new Float32Array(this._iterations*3 + 3);
+    this._degree = 0;
+    this._resetControlRenderer();
+    this._resetCurveRenderer();
   }
 
   // TODO kind of redundant ...
@@ -54,6 +63,9 @@ export default class NURBS extends Curve {
 
   // override
   addControlPoint (point) {
+    if (!this._degree)
+      this._degree = 1;
+
     this._dirtyKnots = true;
     this._appendToControlRenderer(point);
     this._weights.push(1);

@@ -14,6 +14,13 @@ export default class RaGs extends Curve {
     control.length && this._init(control);
   }
 
+  clear () {
+    this._offset = 0.0;
+    this.points.curve = new Float32Array(this._iterations*3 + 3);
+    this._resetControlRenderer();
+    this._resetCurveRenderer();
+  }
+
   // TODO kind of redundant ...
   _reset (control, offset) {
     this._offset = offset;

@@ -49,6 +49,11 @@ for (let curve of CURVE_TYPES) {
       evt.target.textContent = "EDIT";
   });
 
+  ELEMS[curve].bClear.addEventListener('click', (evt) => {
+    Store.curves[curve].current.clear();
+    Store.notify('curveSize');
+  });
+
   ELEMS[curve].curveType.addEventListener('change', (evt) => {
     let tmpPoints = Store.curves[curve].current.points.control;
     let tmpOffset = Store.curves[curve].current._offset;
@@ -63,6 +68,7 @@ for (let curve of CURVE_TYPES) {
       case "nurbs":
       ELEMS[curve].degree.classList.toggle('hidden');
       ELEMS[curve].variance.classList.toggle('hidden');
+      ELEMS[curve].degreeValue.textContent = Store.curves[curve].nurbs._degree;
       Store.curves[curve].current = Store.curves[curve].nurbs;
       break;
 
@@ -71,6 +77,7 @@ for (let curve of CURVE_TYPES) {
     }
 
     Store.curves[curve].current.setControlPoints(tmpPoints, tmpOffset);
+    Store.notify('curvesChanged');
     Store.notify(curve);
   });
 
@@ -84,7 +91,7 @@ for (let curve of CURVE_TYPES) {
     ELEMS[curve].degreeValue.textContent = evt.target.value;
     Store.curves[curve].nurbs.degree = +evt.target.value;
 
-    // draw();
+    Store.notify(curve);
   });
 
   ELEMS[curve].iterationsRange.addEventListener('input', (evt) => {
@@ -96,3 +103,4 @@ for (let curve of CURVE_TYPES) {
 }
 
 export default ELEMS;
+
