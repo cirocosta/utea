@@ -37,6 +37,7 @@ let surface = new DynamicSurface(pb._gl, open, closed);
 
 Store.register('open', () => { surface.reset(open, closed); });
 Store.register('closed', () => { surface.reset(open, closed); });
+Store.register('curveSize', () => { surface.reset_size(open, closed); });
 
 grid.rotate([1.0, 0.0, 0.0], Math.PI/2);
 grid.position = [0.0, 0.0, 0.1];

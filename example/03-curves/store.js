@@ -18,6 +18,7 @@ let curves = {
 let _listeners = {
   open: [],
   closed: [],
+  curveSize: [],
 };
 
 const register = (evtName, fun) => {

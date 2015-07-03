@@ -34,8 +34,8 @@ export default class DynamicSurface {
     let tmpVec = new Float32Array(3);
     let k = 0;
 
-    for (let i = 0; i < this._openN; i += 3) {  // 63/3 times
-      for (let j = 0; j < this._closedN; j += 3) { // 63/3 times --> 441
+    for (let i = 0; i < this._openN; i += 3) {
+      for (let j = 0; j < this._closedN; j += 3) {
         this.coords[k] = open.points.curve[i];
         this.coords[k+1] = open.points.curve[i+1] + closed.points.curve[j+1];
         this.coords[k+2] = closed.points.curve[j];
@@ -72,6 +72,17 @@ export default class DynamicSurface {
 
       this.normals.set(tmpVec, i);
     }
+  }
+
+  reset_size(open, closed) {
+    this._openN = open.points.curve.length;
+    this._closedN = closed.points.curve.length;
+
+    this.coords = new Float32Array((this._closedN/3 * this._openN/3)*6);
+    this.normals = new Float32Array(this.coords.length);
+
+    this._computeSurface(open, closed);
+    this._renderer.reset({coords: this.coords, normals:this.normals});
   }
 
   reset (open, closed) {

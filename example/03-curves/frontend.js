@@ -50,19 +50,19 @@ for (let curve of CURVE_TYPES) {
   });
 
   ELEMS[curve].curveType.addEventListener('change', (evt) => {
-    let tmpPoints = curve.points.control;
-    let tmpOffset = curve._offset;
+    let tmpPoints = Store.curves[curve].current.points.control;
+    let tmpOffset = Store.curves[curve].current._offset;
 
     switch (evt.target.value) {
       case "rag":
-      ELEMS[curve].degree.hidden = true;
-      ELEMS[curve].variance.hidden = false;
+      ELEMS[curve].degree.classList.toggle('hidden');
+      ELEMS[curve].variance.classList.toggle('hidden');
       Store.curves[curve].current = Store.curves[curve].rags;
       break;
 
       case "nurbs":
-      ELEMS[curve].degree.hidden = false;
-      ELEMS[curve].variance.hidden = true;
+      ELEMS[curve].degree.classList.toggle('hidden');
+      ELEMS[curve].variance.classList.toggle('hidden');
       Store.curves[curve].current = Store.curves[curve].nurbs;
       break;
 
@@ -71,13 +71,13 @@ for (let curve of CURVE_TYPES) {
     }
 
     Store.curves[curve].current.setControlPoints(tmpPoints, tmpOffset);
-    // draw();
+    Store.notify(curve);
   });
 
   ELEMS[curve].varianceRange.addEventListener('input', (evt) => {
     ELEMS[curve].varianceValue.textContent = evt.target.value;
     Store.curves[curve].rags.variance = +evt.target.value;
-    // draw();
+    Store.notify(curve);
   });
 
   ELEMS[curve].degreeRange.addEventListener('input', (evt) => {
@@ -91,7 +91,7 @@ for (let curve of CURVE_TYPES) {
     ELEMS[curve].iterationsValue.textContent = evt.target.value;
     Store.curves[curve].current.iterations = evt.target.value;
 
-    // draw();
+    Store.notify('curveSize');
   });
 }
 

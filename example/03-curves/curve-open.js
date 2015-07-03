@@ -68,7 +68,7 @@ pb.bindControls({
     if (!OPEN.edit) { // in insert mode
       OPEN.current.addControlPoint(g_point);
       ELEMS.open.degreeRange.max = OPEN.current._offset/3;
-      draw();
+      Store.notify('open');
 
       return;
     }
@@ -85,10 +85,10 @@ pb.bindControls({
 
     camera.unproject(evt, g_point);
     OPEN.current.updateControlPoint(g_selectedCp, g_point);
-    Store.notify('open');
 
-    if (~g_selectedCp)
-      draw();
+    if (~g_selectedCp) {
+      Store.notify('open');
+    }
   },
 
   onMouseUp: (evt) => {
@@ -105,6 +105,9 @@ pb.bindControls({
     draw();
   },
 });
+
+Store.register('open', draw);
+Store.register('curveSize', draw);
 
 OPEN.current = OPEN.rags;
 renderer.submit(grid, xAxis, yAxis);

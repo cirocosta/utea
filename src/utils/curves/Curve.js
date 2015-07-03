@@ -10,9 +10,7 @@ export default class Curve {
   constructor (gl, camera, control=[], iterations=20) {
     this._camera = camera;
     this._curveLength = iterations*3 + 3;
-    // TODO this will need to be resized in
-    //      run time
-    this._thetas = new Float32Array(63/3);
+    this._thetas = new Float32Array(this._curveLength/3);
 
     // contract
     if (this.constructor == Curve)
@@ -46,6 +44,7 @@ export default class Curve {
   set iterations (iterations) {
     this._iterations = iterations;
     this.points.curve = new Float32Array(iterations*3 + 3);
+    this._thetas = new Float32Array((iterations*3 + 3)/3);
     this._resetCurveRenderer();
   }
 
