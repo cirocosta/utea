@@ -1,4 +1,4 @@
-import "webgl-debug";
+import "vendor/webgl-debug";
 
 const throwOnGLError = (err, fname, args) => {
   throw new Error(
