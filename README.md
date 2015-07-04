@@ -4,7 +4,7 @@
 
 :warning: Under heavy construction :construction_worker: :construction:
 
-## Mess around
+## Messing around
 
 The examples are currently available at [http://cirocosta.github.io/utea/example/](http://cirocosta.github.io/utea/example/). Go check them out!
 
