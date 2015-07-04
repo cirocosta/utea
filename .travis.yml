@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- "0.10"
+script: ./publish.sh
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+env:
+  global:
+    - GH_REF: github.com/cirocosta/utea.git
+    - secure: "O7dM9QQ3cf95xGANC9k8clY0UoG7ThXmRfe50Gcf3aemdP4Zk7J2/euCNXvZfn9r01I51cYNk98zlL0x0hMmxW27YPsr0rxxJLilgvJnIrBBplJAE53AxMdlFg5IQ+tolNo4Ud8llQDxjcui2wO717I7dZZsl6emOGr53LHpZA3znOxUH12HMnUfxxdGidUtGdECsNz4Vw9AkzUNAT1uULT8yMbI3n5eaQ1j5U8BfhOXEJ71ihheKOC13dAqFiEtEtaK49oee3Em9eQCkSdtE3MKBpsV1ShPBmvRJhQLkAUhFUfjTs0/GVvFEVOH3fDefDbcMt8pjo2SvoxXSFPiXBlXOb28Jj5IIT62NIr17QP5ELHBuzzzUvFq1nPu+SQrCis6sz0bzVY1FTW1XPJfOsq+1AVOgl4BeZZ4OavMMLn9Y3lqG0WfF2vGo1hE55cwNJxCos5LMO3aUQKfb/AA9iRIE797Sw85mR0+cfZoW/eF97u44Ar8oqTu9fUeJxAKKeBLNrFroIl4tbwmpwMwW5kItHv/UeGSIUYytqdMKfJAJxeiTOrlhC21MAvJ++cOBDIttMCd9wsWSDCh9KEijNi8SCA2mg3fxbh8ButYyZd44xpvYo6F9VkyyR3tH3MrXVX6tCw7w9WcVV9MLkuspmlvT8qXyqFxQHY4qF/6Ko4="
+
