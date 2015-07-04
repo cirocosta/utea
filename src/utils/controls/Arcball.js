@@ -1,9 +1,10 @@
 import {quat, vec3} from "gl-matrix";
 
 export default class Arcball {
-  constructor (camera, radius=1.0) {
+  constructor (camera, radius=1.0, strict=false) {
     this.radius = radius;
     this._camera = camera;
+    this._strict = strict;
 
     // rotation quats
     this._currRot = quat.create();
@@ -25,13 +26,20 @@ export default class Arcball {
   }
 
   stop (evt) {
-    quat.multiply(this._lastRot, this._lastRot, this._currRot);
+    if (this._strict)
+      quat.multiply(this._lastRot, this._lastRot, this._currRot);
+    else
+      quat.multiply(this._lastRot, this._currRot, this._lastRot);
   }
 
   move (evt) {
     this._toSphere(this._endVec, evt);
     quat.rotationTo(this._currRot, this._startVec, this._endVec);
-    quat.multiply(this._rot, this._lastRot,  this._currRot);
+
+    if (this._strict)
+      quat.multiply(this._rot, this._lastRot,  this._currRot);
+    else
+      quat.multiply(this._rot, this._currRot, this._lastRot);
   }
 
   _toSphere (out, evt) {

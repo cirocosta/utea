@@ -1,14 +1,16 @@
 import {vec3} from "gl-matrix";
 import NormalsMaterial from "utea/materials/NormalsMaterial";
 import BatchRenderer from "utea/renderers/BatchRenderer";
+import Body from "utea/Body";
 
-export default class DynamicSurface {
+export default class DynamicSurface extends Body {
   constructor (gl, open, closed) {
+    super();
     this._renderer = new BatchRenderer(gl, new NormalsMaterial(gl, {
       ambient: [1.0, 0.0, 0.0, 1.0],
       diffuse: [1.0, 0.0, 0.0, 1.0],
       specular: [1.0, 0.0, 0.0, 1.0],
-    }), [gl.TRIANGLE_STRIP, gl.POINTS]);
+    }), [gl.TRIANGLE_STRIP]);
 
     this._openN = 0;
     this._closedN = 0;
@@ -91,7 +93,7 @@ export default class DynamicSurface {
   }
 
   render (camera) {
-    this._renderer.flush(camera);
+    this._renderer.flush(camera, this.modelMatrix, this.normalMatrix);
   }
 }
 
