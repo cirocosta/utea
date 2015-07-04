@@ -17,6 +17,7 @@ var webpackConfig = {
     path: __dirname + '/lib',
     filename: "[name].js",
     chunkFilename: "[id].chunk.js",
+    publicPath: '/lib/'
   },
 
   resolve: {
@@ -56,9 +57,12 @@ var webpackConfig = {
 
 if (envGlobals.__DEV__) {
   webpackConfig.debug = true;
+  webpackConfig.devtool = "eval-source-map";
 } else {
   webpackConfig.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({ output: {comments: false} })
+    new webpack.optimize.UglifyJsPlugin({
+      output: {comments: false},
+    })
   );
   webpackConfig.plugins.push(new webpack.optimize.DedupePlugin());
 }
