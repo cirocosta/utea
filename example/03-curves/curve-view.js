@@ -20,7 +20,7 @@ let pan = new Pan(0.01);
 
 let camera = new PerspectiveCamera();
 let renderer = new Renderer(camera);
-let arcball = new Arcball(camera, 1.0);
+let arcball = new Arcball(camera, 1.5);
 
 camera.position = [0.0, 0.0, -arcball.radius];
 camera.at = [0.0, 0.0, 0.0];
@@ -75,7 +75,7 @@ pb.bindControls({
 
     if (!evt.button) { // mouse-left
       arcball.move(evt);
-      // cube.rotation = arcball.rotation;
+      surface.rotation = arcball.rotation;
 
       return;
     }

@@ -61,7 +61,7 @@ export default class BatchRenderer {
     this._dynVbo.reset(this._shader.prepare(geom));
   }
 
-  flush (camera) {
+  flush (camera, modelMatrix, normalMatrix) {
     if (!this._dynVbo.count)
       return;
 
@@ -70,8 +70,8 @@ export default class BatchRenderer {
 
     this._shader.prepareLocations(this._dynVbo);
     this._shader.prepareUniforms({
-      modelMatrix: this._modelMatrix,
-      normalMatrix: this._modelMatrix,
+      modelMatrix: modelMatrix || this._modelMatrix,
+      normalMatrix: normalMatrix || this._modelMatrix,
     }, camera);
 
     for (let drawMode of this._drawModes)

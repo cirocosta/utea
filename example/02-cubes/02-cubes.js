@@ -16,7 +16,7 @@ let camera = new PerspectiveCamera();
 let renderer = new Renderer(camera);
 let arcball = new Arcball(camera, 2.0);
 
-camera.position = [0.4, 0.0, -0.4];
+camera.position = [0.0, 0.0, -0.4];
 camera.at = [0.0, 0.0, arcball.radius];
 
 let cube = new Renderable(pb._gl, {
