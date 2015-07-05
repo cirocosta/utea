@@ -1,0 +1,141 @@
+-----------------------------
+      Ciro S. Costa
+         8071488
+           EP3
+-----------------------------
+
+Este arquivo trata-se de um adendo ao original `./README.md` presente no repositório (https://github.com/cirocosta/utea).
+
+Visualize o EP em: http://cirocosta.github.io/utea/example/03-curves/ ou siga as instruções em `README.md`.
+
+
+Sobre
+-----
+
+Busquei documentar todos os avanços referentes à implementação no github em forma de pull requests e issues que criei ao desenvolver a aplicação. As relevantes são listadas a seguir:
+
+- PR #20: https://github.com/cirocosta/utea/pull/20
+  - Camera ortográfica e cálculo de BSplines
+- PR #28: https://github.com/cirocosta/utea/pull/28
+  -  NURBs
+- PR #28: https://github.com/cirocosta/utea/pull/29
+  -  RaGs
+- PR #30: https://github.com/cirocosta/utea/pull/30
+  -  3 Canvas e geração de superfície
+- PR #7: https://github.com/cirocosta/utea/pull/7
+  - Arcball
+
+Fiz tal extensa documentação dado que pretendo aos poucos construir uma pequena 'engine' para utilizar em futuros projetos. Vale notar que acabei indo contra alguns dos requisitos do EP e apresento então a justificativa:
+
+- Uso do Commons provido no Paca:
+
+A biblioteca para operações em matrizes provida é muito ineficiente, não utilizando de diversos atalhos que poderiam ser utilizados em suas computações além de realizar checagens desnecessárias, não tomar proveito de passagem por referência e criar muitos arrays que não são necessários.
+
+Optei por utilizar o gl-matrix (https://github.com/toji/gl-matrix) do Brandon Jones que trata-se da biblioteca referência nisso (que muito se aproxima da excelente GLM utilizada em C++).
+
+- Uso de outra linguagem e biblioteca/modulo externo.
+
+Reconheço que nesse quesito 'falho fortemente' dependendo da interpretação se supor que o projeto depende claramente de transpilação. Vale, entretanto, notar que a linguagem utilizada trata-se de Javascript (http://www.ecma-international.org/ecma-262/6.0/  - especificação final, faltando pouco à completude de sua implementação nativa pelos browsers). Dado isto, trata-se de uma pura implementação em Javascript, HTML5 e WebGL, como requisitado, podendo assumir que a parte de transpilação se trata apenas de uma conveniência ao atraso de implementação dos browser (aos poucos chegam lá! http://kangax.github.io/compat-table/es6/#firefox40).
+
+Gostaria de pedir que considerasse um abrandamento à tal regra uma vez que cometi tais 'imprudências' buscando as melhores práticas atuais.
+
+
+Funcionamento
+-------------
+
+- Na superfície em 3D:
+  - Scroll:
+      controla o zoom na cena da superfície
+
+  - MouseLeft:
+      rotaciona a superfície de acordo com uma trackball
+
+  - MouseRight:
+      'pan' - permite transladar na cena nos eixos x/y
+
+- Canvas 2D:
+  - Clear:
+    limpa o canvas atual
+
+  - Insert:
+    Ativa o modo de inserção.
+
+  - Edit:
+    Ativa o modo de edição
+
+  - RaGs/NURBs:
+    Ativa o modo RaGs ou NURBs de curvas para aquele canvas.
+
+Vale notar que toda alteração nos canvas 2D são propagadas ao 3D.
+
+
+Estrutura Comentada
+-------------------
+
+
+├── example
+│   ├── 01-square/            // exemplo de movimentacao de camera x/y
+│   ├── 02-cubes/             // exemplo arcball
+│   ├── 03-curves             // EP3!
+│   │   ├── 03-curves.css
+│   │   ├── 03-curves.js
+│   │   ├── curve-closed.js   // canvas da curva fechada
+│   │   ├── curve-open.js     // canvas da curva aberta
+│   │   ├── curve-view.js     // canvas da sup. 3d
+│   │   ├── frontend.js       // controle dos widgets
+│   │   ├── index.html
+│   │   └── store.js          // controle do estado da aplicação
+├── src
+│   ├── Body.js               // representação espacial de um corpo no espaço
+│   ├── buffers               // controle dos buffers
+│   │   ├── Buffer.js         // base dos buffers. Mantém referência à localidade
+│   │   ├── DynamicBuffer.js  // dinamica - atualizada frequentement, mantem dados
+│   │   ├── IndexBuffer.js
+│   │   └── VertexBuffer.js   // buffer estático - não mantem os dados na cpu
+│   ├── cameras
+│   │   ├── Camera.js
+│   │   ├── OrthographicCamera.js   // camera ortografica p/ o 2d
+│   │   └── PerspectiveCamera.js    // camera perspectiva p/ o 3d
+│   ├── geometries
+│   │   ├── Cube.js
+│   │   ├── Line.js
+│   │   ├── PlaneGrid.js            // grid utilizado no chao e fundo 2D
+│   │   ├── Point.js
+│   │   ├── Points.js
+│   │   ├── Sphere.js
+│   │   └── Square.js
+│   ├── index.js
+│   ├── materials
+│   │   ├── BasicMaterial.js        // material sem reflexao
+│   │   └── NormalsMaterial.js      // phong
+│   ├── PaintBoard.js
+│   ├── Renderable.js
+│   ├── renderers                   // renderizadores. Tratam de desenhar
+│   │   ├── BatchRenderer.js        // lida com buffers dinamicos
+│   │   └── Renderer.js             // lida com buffers estáticos
+│   ├── shaders
+│   │   ├── basic
+│   │   │   ├── basic.frag
+│   │   │   ├── BasicShader.js
+│   │   │   └── basic.vert
+│   │   ├── normals
+│   │   │   ├── normals.frag
+│   │   │   ├── NormalsShader.js
+│   │   │   └── normals.vert
+│   │   └── Shader.js               // controle dos shaders (ativação,etc)
+│   └── utils
+│       ├── controls
+│       │   ├── Arcball.js          // controle por arcaball - usado na sup.
+│       │   ├── Pan.js              // controle por translação - visualizacao
+│       │   └── Zoom.js             // zoom com lerp
+│       ├── curves
+│       │   ├── Curve.js            // classe base das curvas
+│       │   ├── DynamicSurface.js   // geracao da superficie usando as curvas
+│       │   ├── NURBS.js            // NURBS/BSpline quando pesos iguais
+│       │   └── RaGs.js             // RAGS
+│       ├── debug.js
+│       └── Ray.js
+└
+
+Toda a estrutura é gerenciada pela definição de módulos (es2015).
+
