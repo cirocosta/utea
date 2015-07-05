@@ -56,15 +56,13 @@ pb.bindControls({
   interceptRightClick: true,
 
   onMouseUp: (evt) => {
-    if (!evt.button) {
+    if (!evt.button)
       return arcball.stop(evt);
-    }
   },
 
   onMouseDown: (evt) => {
-    if (!evt.button) {
+    if (!evt.button)
       return arcball.start(evt);
-    }
 
     pan.start(evt.offsetX, evt.offsetY);
   },
@@ -73,7 +71,7 @@ pb.bindControls({
     if (!evt.buttons)
       return;
 
-    if (!evt.button) { // mouse-left
+    if (evt.buttons === 1) { // mouse-left
       arcball.move(evt);
       surface.rotation = arcball.rotation;
 
@@ -87,8 +85,11 @@ pb.bindControls({
 
 let zoom = new Zoom(camera);
 
-document.addEventListener('mousewheel', (evt) => {
-  zoom.goal = camera.fov - event.wheelDeltaY * 0.20;
+document.addEventListener('wheel', (evt) => {
+  if (evt.deltaY < 0)
+    zoom.goal = camera.fov - 10;
+  else
+    zoom.goal = camera.fov + 10;
 });
 
 (function loop () {

@@ -57,7 +57,7 @@ var webpackConfig = {
 
 if (envGlobals.__DEV__) {
   webpackConfig.debug = true;
-  webpackConfig.devtool = "eval-source-map";
+  webpackConfig.devtool = "#eval-source-map";
 } else {
   webpackConfig.plugins.push(
     new webpack.optimize.UglifyJsPlugin({
